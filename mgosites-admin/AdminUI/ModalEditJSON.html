@@ -1,0 +1,33 @@
+<div class="mgo-admin-modal" ng-controller="ModelEditJSON" ng-if="state.shouldShowEditJSONModal">
+    <div class="mgo-am-window">
+        <h3 class="mgo-amw-title" ng-class="{selectedTab: editor_vm.template.title == 'JSON'}" ng-click="editor_vm.template = { title: 'JSON' }">JSON</h3>
+        <h3 class="mgo-amw-title" ng-class="{selectedTab: editor_vm.template == editTemplate}" ng-if="!isInvalidJSON()" ng-repeat="editTemplate in editTemplates" ng-click="editor_vm.template = editTemplate">{{ editTemplate.title }}</h3>
+        <div class="mgo-spinner" ng-if="state.loading">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+        <div class="mgo-amw-controls">
+            <div class="mgo-amw-control" ng-if="!isInvalidJSON()" ng-click="handleSaveJSON()">Save</div>
+            <div class="mgo-amw-control json-invalid" ng-if="isInvalidJSON()">Cannot save: your JSON is invalid</div>
+            <div class="mgo-amw-control" ng-if="!isInvalidJSON() && JSON.parse(state.codeToEdit)._id" ng-click="handleDelete()">DELETE</div>
+            <div class="mgo-amw-control" ng-click="handleCloseEditor()">Cancel</div>
+        </div>
+        <div class="mgo-amw-tabs">
+            <div class="mgo-amw-tab"
+                 ng-class="{'active': item._id == state.activeTab}"
+                 ng-repeat="item in state.shouldShowEditJSONModal"
+                 ng-click="setCodeToEdit(item.code); state.activeTab = item._id;">{{item._id}}</div>
+        </div>
+        <div class="mgo-amw-body-wrapper">
+            <div class="mgo-amw-body" ng-if="editor_vm.template.title == 'JSON'">
+                <textarea class="mgo-amw-textarea" ng-trim="false" ng-model="state.codeToEdit" ng-keydown="handleKeyPress($event)"></textarea>
+            </div>
+            <div class="mgo-amw-body" ng-if="editor_vm.template.title != 'JSON'">
+                <div ng-template-from-var="editor_vm.template.htmlTemplate">
+                </div>
+            </div>
+            <div ng-class="{'mgo-amw-body-cover': state.loading}"></div>
+        </div>
+    </div>
+</div>

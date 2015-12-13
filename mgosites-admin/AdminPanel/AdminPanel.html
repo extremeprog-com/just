@@ -1,0 +1,52 @@
+<textarea
+        class="mgo-admin-console"
+        ng-model="state.command"
+        spellcheck = false
+        ng-keypress="$event.key === 'Enter' && ($event.preventDefault() + runRequest($event))">
+</textarea>
+<div class="mpo-content-wrap">
+    <div ng-include="'/mgosites-admin/AdminUI/ModalEditJSON.html'" ng-show="state.shouldShowEditJSONModal"></div>
+    <div ng-include="'/mgosites-admin/AdminPanel/ModalAddUserPass.html'" ng-show="state.shouldShowAddUserPassModal"></div>
+    <div class="mgo-admin-entities">
+        <ul ng-if="pluginsReady">
+            <li ng-click="state.list_view = {title: 'JSON'}; handleSelectDataType('Users');">Users</li>
+            <li ng-repeat="dataType in state.dataTypes"
+                ng-if="allowedObjects.indexOf(dataType._id) != -1"
+                ng-click="state.list_view = {title: 'JSON'}; handleSelectDataType(dataType._id);"
+                ng-class="{'active': state.activeDataType == dataType._id}"
+                    >{{dataType._id}} ({{dataType.count}})
+            </li>
+        </ul>
+    </div>
+    <div>
+        <div class="mpo-cw-data-view-switcher">
+
+            <div class="mpo-dvs-json"   title="JSON"
+                 ng-if="objects && listTemplates[state.activeDataType].length" ng-click="state.list_view = {title: 'JSON'}"
+            >JSON</div>
+
+            <div class="mpo-dvs-table"  title="{{ list_view.title }}"
+                 ng-if="objects && ( !allowed_list_views[state.activeDataType] || allowed_list_views[state.activeDataType].indexOf(state.list_view.title) != -1 )"
+                 ng-repeat="list_view in listTemplates[state.activeDataType]"
+                 ng-click="state.list_view = list_view"
+            >{{ list_view.title }}</div>
+
+            <div class="mpo-dvs-create" title="Create {{ state.activeDataType }}" ng-show="state.activeDataType && state.activeDataType != 'Users'"
+                    ng-click="state.shouldShowEditJSONModal = getObjectTemplates() || [{ code: {_type: state.activeDataType}, _id: state.activeDataType }]"
+            >
+                Create {{ state.activeDataType }}
+            </div>
+            <div class="mpo-dvs-create" title="Create {{ state.activeDataType }}" ng-show="state.activeDataType && state.activeDataType == 'Users'"
+                 ng-click="state.shouldShowAddUserPassModal = true"
+                    >
+                Create {{ state.activeDataType }}
+            </div>
+        </div>
+        <div class="mgo-admin-data" ng-if="!state.list_view || state.list_view.title == 'JSON'">
+            <ul>
+                <li ng-repeat="dataItem in state.objects" ng-click="state.shouldShowEditJSONModal = [{ code: dataItem }]">{{dataItem}}</li>
+            </ul>
+        </div>
+        <div class="mgo-admin-data" ng-if="state.list_view.title != 'JSON'" ng-template-from-var="state.list_view.htmlTemplate"></div>
+    </div>
+</div>

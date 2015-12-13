@@ -1,0 +1,16 @@
+<div class="mgo-admin-modal pass-modal" ng-controller="ModalAddUserPass" ng-if="state.shouldShowAddUserPassModal">
+    <div class="mgo-am-window">
+        <h3 class="mgo-amw-title">Create new user</h3>
+        <div class="mgo-spinner" ng-if="state.loading">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+        <div class="mgo-amw-controls">
+            <div class="mgo-amw-control" ng-click="handleSavePassword()">Create</div>
+            <div class="mgo-amw-control" ng-click="handleCloseModal()">Cancel</div>
+        </div>
+        <input class="mgo-amw-input" placeholder="Type user email here" ng-model="state.userLogin" type="text" />
+        <input class="mgo-amw-input" placeholder="Type password here"  ng-model="state.userPass"  type="text" />
+    </div>
+</div>

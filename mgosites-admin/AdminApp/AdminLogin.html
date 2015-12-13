@@ -1,0 +1,20 @@
+<div>
+    <form class="mgo-login-form" ng-submit="handleLogin()">
+        <h3>[MongoSites Admin]</h3>
+        <input
+                type="text"
+                placeholder="Email"
+                class="mgp-lf-input"
+                ng-change="handleEmailChange()"
+                ng-model="state.login"
+                />
+        <input
+                type="password"
+                placeholder="Password"
+                class="mgp-lf-input"
+                ng-model="state.password"
+                />
+        <span class="mgo-lf-error">{{state.error}}</span>
+        <input type="submit" class="mgo-lf-submit" value="Sign In" />
+    </form>
+</div>

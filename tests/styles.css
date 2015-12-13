@@ -1,0 +1,9 @@
+.hidden-child { 
+	display:none; 
+}
+.parent:hover .hidden-child { 
+	display:block; 
+}
+.break-all-words {
+	word-break: break-all;
+}

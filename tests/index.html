@@ -1,0 +1,31 @@
+<html>
+<head>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+
+    <script>MSA_SERVER_URL = 'http://localhost:8079'</script>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/ng-file-upload/ng-file-upload-all.js"></script>
+    <script src="../mongoSitesApi.js?site=test"></script>
+    <script src="tests.js"></script>
+</head>
+
+<body ng-app="mongo-site-api-test">
+    <div class="container">
+        <div ng-view ng-controller="controller-test-upload">
+            <input type="file" ngf-select="upload($file)" />
+        </div>
+        <iframe frameborder="0" width="0" height="0" name="_"></iframe>
+        
+        <div ng-view ng-controller="controller-test" class="break-all-words">
+            <input value="Restart all" type="button" ng-click="run()"/>
+            <div ng-repeat="test in tests">
+                <div class="alert {{test.class}} parent"><input value="Restart" type="button" ng-click="test.run()"/><span><strong>{{test.name}}</strong> {{test.message}}</span> <span class="hidden-child">{{test.details}}</span></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

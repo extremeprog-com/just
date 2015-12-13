@@ -1,0 +1,8 @@
+*.iml
+node_modules/
+bower_components/
+build/
+.DS_Store
+.docker/version.txt
+npm-debug.log
+.idea/
