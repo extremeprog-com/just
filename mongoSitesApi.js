@@ -11,18 +11,20 @@ mongoSitesApi = (function() {
     }
 
     function sortObjectKeys(obj) {
-        var keys = Object.keys(obj);
-        keys.sort();
-        keys.map(function(key) {
-            var val = obj[key];
-            delete obj[key];
-            obj[key] = val;
-        });
-        keys.map(function(key) {
-            if(obj[key] instanceof Object) {
-                sortObjectKeys(obj[key]);
-            }
-        });
+        if(obj && typeof obj == 'object' && obj instanceof Object) {
+            var keys = Object.keys(obj);
+            keys.sort();
+            keys.map(function(key) {
+                var val = obj[key];
+                delete obj[key];
+                obj[key] = val;
+            });
+            keys.map(function(key) {
+                if(obj[key] instanceof Object) {
+                    sortObjectKeys(obj[key]);
+                }
+            });
+        }
     }
 
     return {
