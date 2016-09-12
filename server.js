@@ -19,6 +19,15 @@ var cookieParser = require('cookie-parser');
 var app = express();
 var AWS = require('aws-sdk');
 
+var nodemailer = require('nodemailer');
+
+// create reusable transporter object using the default SMTP transport
+var transporter = nodemailer.createTransport({direct: true});
+
+var htmlToText = require('nodemailer-html-to-text').htmlToText;
+transporter.use('compile', htmlToText());
+
+
 var port = process.env.PORT || 8079;
 
 var url = require('url');
@@ -236,7 +245,8 @@ function parser(data_handle, custom_handle) {
                                     }
                                 },
                                 user,
-                                res
+                                res,
+                                req
                             )
                         }
 
@@ -382,7 +392,7 @@ app.post('/api/auth/logout', parser(null, function (req, res, site, user) {
     });
 }));
 
-app.post('/api/auth/register', parser(function (site, data, cb, user, res) {
+app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) {
 
     if (!site.free_register && !user) {
         cb(['Authorization required']);
@@ -414,12 +424,50 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res) {
                     cb(err);
                 } else {
                     io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id + '-users' });
+
+                    var code = encrypt(JSON.stringify({date: new Date().getTime() / 1000, r: Math.random().toString().substr(2), email: new_user._id}));
+
+                    var link = 'http://' + req.headers.host + '/api/auth/activate/?code=' + code;
+
+                    console.log('activation_link: ' + link);
+
+                    // setup e-mail data with unicode symbols
+                    var mailOptions = {
+                        from    : process.env.EMAIL_FROM || 'noreply@' + site.names[0], // sender address
+                        to      : new_user._id, // list of receivers
+                        subject : 'Registering new user', // Subject line
+                        html    : 'Please activate your account by link: <a href="' + link + '">' + link + '</a>' // html body
+                    };
+
+                    // send mail with defined transport object
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if(error){
+                            return console.log(error);
+                        }
+                        console.log('Message sent: ' + info.response);
+                    });
+
                     cb(null, true); // success
                 }
             })
         }
     });
 
+}));
+
+app.post('/api/auth/activate', parser(null, function (req, res, site, user) {
+    try {
+        var json = decrypt(req.query.res);
+        var params = JSON.parse(json);
+    } catch(e) {
+        console.error(e, json);
+        res.send(500);
+    }
+
+    var collectionUsers = db.collection('site-' + site._id + '-users');
+    collectionUsers.update({_id: params.email}, {$set: {"active": 1}}, function (err, response) {
+        res.send([err, true]);
+    });
 }));
 
 app.post('/api/auth/users', parser(function (site, data, cb, user, res) {
@@ -480,7 +528,16 @@ app.post('/api/auth/update', parser(function(site, data, cb, user, res) {
         return;
     }
 
-    if ( !data[0]._id ) {
+    if (user._id != data[0]._id && user.admin) {
+        cb(['Only account owner or admin can do this']);
+        return;
+    }
+
+    if(!user.admin) {
+        delete data[0].admin;
+    }
+
+    if (!data[0]._id) {
         cb(['Fields _id required']);
         return;
     }
@@ -580,6 +637,7 @@ app.post('/api/save', parser(function (site, data, cb, user) {
                 io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id });
 
                 delete data._persist;
+
                 if(changed) {
                     snapshots.insertOne(data, function (err2, result2) {
                         collection.findOne({_id: _id}, function (err3, result3) {
