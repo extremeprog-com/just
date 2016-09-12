@@ -426,7 +426,7 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
                 } else {
                     io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id + '-users' });
 
-                    var code = encrypt(JSON.stringify({date: new Date().getTime() / 1000, r: Math.random().toString().substr(2), email: new_user._id}));
+                    var code = encrypt(JSON.stringify({date: new Date().getTime() / 1000, r: Math.random().toString().substr(2), email: new_user._id, site: site._id}));
 
                     var link = 'http://' + req.headers.host + '/api/auth/activate?' + querystring.stringify({code: code});
 
@@ -456,20 +456,21 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
 
 }));
 
-app.get('/api/auth/activate', parser(null, function (req, res, site, user) {
+app.get('/api/auth/activate', function (req, res) {
     try {
-        var json = decrypt(req.query.res);
+        var json = decrypt(req.query.code);
         var params = JSON.parse(json);
     } catch(e) {
-        console.error(e, json);
+        console.error(e, e.stackTrace, json);
         res.send(500);
+        return;
     }
 
-    var collectionUsers = db.collection('site-' + site._id + '-users');
+    var collectionUsers = db.collection('site-' + params.site + '-users');
     collectionUsers.update({_id: params.email}, {$set: {"active": 1}}, function (err, response) {
         res.send([err, true]);
     });
-}));
+});
 
 app.post('/api/auth/users', parser(function (site, data, cb, user, res) {
 
