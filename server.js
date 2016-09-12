@@ -17,7 +17,8 @@ var express = require('express');
 var busboy = require('connect-busboy');
 var cookieParser = require('cookie-parser');
 var app = express();
-var AWS = require('aws-sdk');
+
+var querystring = require("querystring");
 
 var nodemailer = require('nodemailer');
 
@@ -427,7 +428,7 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
 
                     var code = encrypt(JSON.stringify({date: new Date().getTime() / 1000, r: Math.random().toString().substr(2), email: new_user._id}));
 
-                    var link = 'http://' + req.headers.host + '/api/auth/activate/?code=' + code;
+                    var link = 'http://' + req.headers.host + '/api/auth/activate/?' + querystring.stringify({code: code});
 
                     console.log('activation_link: ' + link);
 
@@ -796,37 +797,6 @@ app.post('/api/graph_search', parser(function (site, data, cb) {
             });
         });
     });
-}));
-
-app.post('/api/upload_image', parser(null, function (req, res, site, user) {
-
-    if (!user) {
-        res.send([{error: "Not permitted to upload the file"}]);
-        return;
-    }
-    req.pipe(req.busboy);
-
-    req.busboy.on('file', function (fieldname, file, fn) {
-        var filename = new Date().getTime() + '-' + fn.replace(/[/]/g, '');
-
-        AWS.config.update({accessKeyId: site.AWS.S3.accessKeyId, secretAccessKey: site.AWS.S3.secretAccessKey});
-        var s3obj = new AWS.S3({params: {Bucket: site.AWS.S3.Bucket, Key: site.AWS.S3.prefix.image + filename}});
-
-        s3obj.upload({Body: file})
-            .send(function (err, data) {
-                res.json([err, data]);
-            });
-    });
-}));
-
-app.post('/api/s3_credentials', parser(null, function(req, res, site, user) {
-
-    if (!user) {
-        res.send([{error: "Not permitted to fetch AWS S3 credentials"}]);
-        return;
-    }
-
-    res.send([null, site.AWS.S3]);
 }));
 
 
