@@ -428,7 +428,7 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
 
                     var code = encrypt(JSON.stringify({date: new Date().getTime() / 1000, r: Math.random().toString().substr(2), email: new_user._id}));
 
-                    var link = 'http://' + req.headers.host + '/api/auth/activate/?' + querystring.stringify({code: code});
+                    var link = 'http://' + req.headers.host + '/api/auth/activate?' + querystring.stringify({code: code});
 
                     console.log('activation_link: ' + link);
 
@@ -456,7 +456,7 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
 
 }));
 
-app.post('/api/auth/activate', parser(null, function (req, res, site, user) {
+app.get('/api/auth/activate', parser(null, function (req, res, site, user) {
     try {
         var json = decrypt(req.query.res);
         var params = JSON.parse(json);
