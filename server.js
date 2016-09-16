@@ -373,6 +373,7 @@ app.post('/api/auth', parser(function (site, data, cb, user, res) {
                     cb(null, {site: site._id, token: token});
                 });
             } else {
+                res.status(400);
                 cb('Login and password does not match');
             }
         }
@@ -401,7 +402,16 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
     }
 
     if ( !data[0]._id || !data[0].password ) {
+        res.status(400);
         cb(['Fields _id and password required']);
+        return;
+    }
+
+    var re_email = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
+    if( !re_email.test(data[0]._id) ) {
+        res.status(400);
+        cb(['Wrong _id']);
         return;
     }
 
@@ -418,6 +428,7 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
 
     collectionUsers.findOne({_id: new_user._id}, function(err, user_exists) {
         if(user_exists) {
+            res.status(400);
             cb(['User with _id=' + new_user._id + ' already exists'])
         } else {
             collectionUsers.insert(new_user, function(err, data) {
@@ -426,29 +437,35 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
                 } else {
                     io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id + '-users' });
 
-                    var code = encrypt(JSON.stringify({date: new Date().getTime() / 1000, r: Math.random().toString().substr(2), email: new_user._id, site: site._id}));
-
+                    var code = encrypt(JSON.stringify({
+                        date: new Date().getTime() / 1000,
+                        r: Math.random().toString().substr(2),
+                        email: new_user._id,
+                        site: site._id
+                    }));
                     var link = 'http://' + req.headers.host + '/api/auth/activate?' + querystring.stringify({code: code});
 
                     console.log('activation_link: ' + link);
 
                     // setup e-mail data with unicode symbols
                     var mailOptions = {
-                        from    : process.env.EMAIL_FROM || 'noreply@' + site.names[0], // sender address
+                        from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
                         to      : new_user._id, // list of receivers
                         subject : 'Registering new user', // Subject line
                         html    : 'Please activate your account by link: <a href="' + link + '">' + link + '</a>' // html body
                     };
 
-                    // send mail with defined transport object
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if(error){
-                            return console.log(error);
-                        }
-                        console.log('Message sent: ' + info.response);
-                    });
+                    if(process.env.TEST_ENV != 'DEV_TEST') {
+                        // send mail with defined transport object
+                        transporter.sendMail(mailOptions, function(error, info){
+                            if(error){
+                                return console.log(error);
+                            }
+                            console.log('Message sent: ' + info.response);
+                        });
+                    }
 
-                    cb(null, true); // success
+                    cb(null, process.env.TEST_ENV == 'DEV_TEST' ? {activation_link: link} : {sdfijsdfioj:239874289}); // success
                 }
             })
         }
@@ -522,6 +539,97 @@ app.post('/api/auth/check', parser(function (site, data, cb, user, res) {
 
     cb(null, user === undefined ? false : user_to_send);
 
+}));
+
+app.post('/api/request_reset_password', parser(function(site, data, cb, user, res, req) {
+    if( !data[0]._id || !data[0]._id.trim().length ) {
+        res.status(400);
+        cb(['This user is not found in the system']);
+        return;
+    }
+
+    var collectionUsers = db.collection('site-' + site._id + '-users');
+
+    collectionUsers.findOne({_id: data[0]._id}, function(err, user_exists) {
+        if(user_exists) {
+
+            // generate reset password link
+            var code = encrypt(JSON.stringify({
+                date: new Date().getTime() / 1000,
+                r: Math.random().toString().substr(2),
+                email: data[0]._id,
+                site: site._id
+            }));
+            var reset_token = querystring.stringify({code: code});
+            var link = 'http://' + req.headers.host + '/api/auth/reset_password?' + reset_token;
+
+            // setup e-mail data with unicode symbols
+            var mailOptions = {
+                from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
+                to      : data[0]._id, // list of receivers
+                subject : 'Registering new user', // Subject line
+                html    : 'Please activate your account by link: <a href="' + link + '">' + link + '</a>' // html body
+            };
+
+            if(process.env.TEST_ENV != 'DEV_TEST') {
+                // send mail with defined transport object
+                transporter.sendMail(mailOptions, function(error, info) {
+                    if(error){
+                        return console.log(error);
+                    }
+                    console.log('Message sent: ' + info.response);
+                });
+            }
+
+            cb(null, process.env.TEST_ENV == 'DEV_TEST' ? {reset_token: reset_token} : {sdfijsdfioj:239874289}); // success
+        } else {
+            res.status(400);
+            cb(['User with _id=' + data[0]._id + ' does not exist'])
+        }
+    });
+
+}));
+
+app.post('/api/reset_password', parser(function(site, data, cb, user, res, req) {
+    try {
+        var json = decrypt(req.query.code);
+        var params = JSON.parse(json);
+    } catch(e) {
+        res.send(500);
+        return;
+    }
+
+    if(!data[0].password || !data[0].password.trim().length) {
+        res.status(400);
+        cb(['New password should not be empty']);
+        return;
+    }
+
+    var managed_user = { _id: params.email };
+    var hash = new crypto.Hash('MD5');
+    hash.update(managed_user._id + data[0].password + secret);
+    managed_user.passwordHash = hash.digest('base64');
+
+    var collectionUsers = db.collection('site-' + site._id + '-users');
+
+    collectionUsers.findOne({_id: managed_user._id}, function(err, user_exists) {
+        if(user_exists) {
+            for (var i in managed_user) if (managed_user.hasOwnProperty(i) && ['_id'].indexOf(i) < 0 ) {
+                user_exists[i] = managed_user[i];
+            }
+            collectionUsers.updateOne({_id: managed_user._id}, user_exists, function(err, data) {
+                if(err) {
+                    cb(err);
+                } else {
+                    io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id + '-users' });
+                    cb(null, true); // success
+                }
+            })
+        } else {
+            res.status(400);
+            cb(['User with _id=' + managed_user._id + ' does not exist'])
+        }
+    });
 }));
 
 app.post('/api/auth/update', parser(function(site, data, cb, user, res) {

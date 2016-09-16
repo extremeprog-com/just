@@ -2,7 +2,7 @@ var colors = require('colors');
 var fs = require('fs');
 var firstAtFile, firstAtLine, firstAtChar;
 
-var contents;
+var contents = '';
 
 process.stdin.on('readable', function() {
     var idx, c;
@@ -22,10 +22,15 @@ process.stdin.on('readable', function() {
                 console.log();
                 console.log((firstAtFile + ":" + firstAtLine + ':' + firstAtChar).red);
                 console.log();
-                var lines = fs.readFileSync(firstAtFile).toString().split("\n").slice(firstAtLine - 5, firstAtLine + 2);
-                lines[4] = lines[4].red;
-                console.log(lines.join("\n"));
-                console.log();
+                try {
+                    var lines = fs.readFileSync(firstAtFile).toString().split("\n").slice(firstAtLine - 5, firstAtLine + 2);
+                    lines[4] = lines[4].red;
+                    console.log(lines.join("\n"));
+                    console.log();
+                } catch(e) {
+                    // console.error('Error at tests_a',e);
+                    // console.log();
+                }
             }
         }
         process.stdout.write(chunk)

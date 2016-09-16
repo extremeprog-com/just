@@ -6,3 +6,5 @@ build/
 .docker/version.txt
 npm-debug.log
 .idea/
+data/
+tests_debug.log

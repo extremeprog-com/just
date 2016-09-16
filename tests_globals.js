@@ -46,10 +46,10 @@ user  = {};
 admin = {};
 
 admin.email     = random_email();
-admin.password = random_password();
+admin.password  = random_password();
 
-user.email    = random_email();
-user.password  = random_password();
+user.email      = random_email();
+user.password   = random_password();
 
 create_user_for_test = function(email, password, cb) {
 
@@ -57,44 +57,72 @@ create_user_for_test = function(email, password, cb) {
     if(arguments[1] instanceof Function) { return create_user_for_test(email         , random_password(), arguments[1]); }
 
     var user = {};
+    jar = request.jar();
 
-    api_post('/api/users', { email: email, password: password }, function(err, res) {
-        api_post('/api/auth', { email: email, password: password }, function(err, res) {
+    api_post('/api/auth/register', [{ _id: email, password: password }], function(err, res) {
+        api_post(res.body[1].activation_link, function(err, res) {
+            api_post('/api/auth', [email, password], function(err, res) {
 
-            user.token = res.body && res.body.result && res.body.result.auth_token;
-            user.User  = res.body && res.body.result && res.body.result.User;
+                //user.token = res.body && res.body.result && res.body.result.auth_token;
+                user.jar = jar;
 
-            cb();
+                cb(user);
+            });
         });
     });
 
-    return user
+    return user;
+};
+
+var headers = {
+    'Referer': "http://localhost:" + server_port,
+    'X-MongoApi-Site': 'test'
+};
+
+jar = false;
+
+initCookie = function(User) {
+
+    uit && uit('[init empty cookie]', i);
+
+    function i() {
+        if(User === false) {
+            jar = false;
+        } else if(User === true || User === undefined) {
+            jar = request.jar();
+        } else {
+            jar = User.jar;
+        }
+    }
 };
 
 api_get = function(url, cb) {
-    request("http://localhost:" + server_port + url, { json: true }, function(err, res, body) {
+    if(!url.match(/^https?:\/\//)) url = "http://localhost:" + server_port + url;
+    request.get({url: url, json: true, headers: headers, jar : jar || request.jar() }, function(err, res, body) {
         log_resource(body, "request GET " + url + '. response ' + res.statusCode);
         cb(err, res, body);
     })
 };
 
 api_post = function(url, data, cb) {
+    if(!url.match(/^https?:\/\//)) url = "http://localhost:" + server_port + url;
     if(data instanceof Function) {
         cb = data;
         data = null;
     }
-    request.post({url: "http://localhost:" + server_port + url, json: true, form: data }, function(err, res, body) {
+    request.post({url: url, json: true, headers: headers, jar : jar || request.jar(), body: data }, function(err, res, body) {
         log_resource(body, "request POST " + url + ' data ' + JSON.stringify(data) + ' response ' + res.statusCode);
         cb(err, res, body);
     })
 };
 
 api_delete = function(url, data, cb) {
+    if(!url.match(/^https?:\/\//)) url = "http://localhost:" + server_port + url;
     if(data instanceof Function) {
         cb = data;
         data = null;
     }
-    request.delete({url: "http://localhost:" + server_port + url, json: true, form: data }, function(err, res, body) {
+    request.delete({url: url, json: true, headers: headers, jar : jar || request.jar(), body: data }, function(err, res, body) {
         log_resource(body, "request DELETE " + url + ' data ' + JSON.stringify(data) + ' response ' + res.statusCode);
         cb(err, res, body);
     })
@@ -103,7 +131,7 @@ api_delete = function(url, data, cb) {
 before(function(done) {
     //log_resource('trying to start', 'server');
     server_process = require('child_process').spawn(
-        'node', ['server.js'], { env: { PORT: server_port, ADMIN_USER: admin.email, MONGO_URL: mongo_url } }
+        'node', ['server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, ADMIN_USER: admin.email, MONGO_URL: mongo_url } }
     );
     server_process.stdout.on('data', function(chunk) {
         log_resource(chunk.toString(), "server's stdout");
@@ -116,22 +144,15 @@ before(function(done) {
             if (err) {
                 waitServer()
             } else {
-                api_post('/api/users', { email: admin.email, password: admin.password }, function(err, res) {
-                    api_post('/api/auth', { email: admin.email, password: admin.password }, function(err, res) {
+                create_user_for_test(admin.email, admin.password, function(created_user) {
+                    //admin.token = created_user.token;
+                    admin.jar   = created_user.jar;
 
-                        admin.token = res.body && res.body.result && res.body.result.auth_token;
-                        admin.User  = res.body && res.body.result && res.body.result.User;
+                    create_user_for_test(user.email, user.password, function(created_user) {
+                        //user.token = created_user.token;
+                        user.jar   = created_user.jar;
 
-                        api_post('/api/users', { email: user.email, password: admin.password }, function(err, res) {
-                            api_post('/api/auth', { email: user.email, password: admin.password }, function(err, res) {
-
-                                user.token = res.body && res.body.result && res.body.result.auth_token;
-                                user.User  = res.body && res.body.result && res.body.result.User;
-
-                                done();
-                                /* log_resource('started','server'); */
-                            });
-                        });
+                        done();
                     });
                 });
             }
@@ -178,13 +199,14 @@ var test_descriptions = (function iterate_descriptions(base, result, text) {
 })(JSON.parse(fs.readFileSync('tests.json')), {});
 
 test_filestring = function(descr) {
-    var matches = new Error().stack.match(/([^/]+?\-test.js):\d+/);
+    var matches = new Error().stack.match(/test\/(.+?\-test.js):\d+/);
     return matches[0] + (descr !== false ?  ' (' + test_descriptions[matches[1]] + ')' : '')
 };
 
 module.exports = {
     init: function() {
         if(typeof newit == 'undefined' || newit != it) {
+            jar = false;
             uit = it;
 
             it = newit = function(msg, cb) {
@@ -193,7 +215,7 @@ module.exports = {
                     log_resource(msg, "test");
                     cb(done);
                 });
-            }
+            };
         }
     }
 };

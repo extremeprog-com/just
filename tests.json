@@ -37,6 +37,31 @@
     ]
   },
   "MSA HTTP API layer ": {
+    "Component: Auth": {
+      "Attribute: Functional": {
+        "user should be able to register": [
+          "func api/auth.functional.register: register, verify email, login, logout"
+        ],
+        "user should be able to reset password": [
+          "func api/auth.functional.reset_password: request reset password, add new password, login"
+        ],
+        "user should be able to update user data": [
+          "func api/auth.functional.update_user: login, update data"
+        ],
+        "user should be able to delete another user": [
+          "func api/auth.functional.delete_user: login, delete user"
+        ]
+      },
+      "Attribute: Secure [prio=10]": {
+        "user should not be able to register with already existing password": [
+          "func api/auth.secure.register_wrong_credentials: register with wrong email, register with existing email, register with empty password"
+        ],
+        "user should not be able verify wrong email": [
+          "func api/auth.secure.verify_wrong_email: register, verify wrong email"
+        ]
+      }
+    },
+
     "register/activation/login/logout should be foolproof": [
       "func api/rubbish : try to send some bad values to register/login/update user api (too long, empty, wrong format)"
     ],
@@ -48,10 +73,9 @@
     ]
   },
   "MSA server implementation layer": {
-
   },
   "MSA config layer": {
-    "Can set admin account email from env variables" : [
+    "Can set admin account email from env variables": [
       "func deploy/admin: set usual user as admin, check that provided user is admin"
     ]
   }
