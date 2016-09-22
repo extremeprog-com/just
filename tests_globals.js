@@ -180,7 +180,7 @@ resource = {
     log: log_resource
 };
 
-
+var tests = require('./tests_scenarios.js');
 var test_descriptions = (function iterate_descriptions(base, result, text) {
     if(base instanceof Array) {
         for(var i = 0; i < base.length; i++) {
@@ -196,7 +196,7 @@ var test_descriptions = (function iterate_descriptions(base, result, text) {
         })
     }
     return result;
-})(JSON.parse(fs.readFileSync('tests.json')), {});
+})(tests, {});
 
 test_filestring = function(descr) {
     var matches = new Error().stack.match(/test\/(.+?\-test.js):\d+/);

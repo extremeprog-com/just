@@ -18,6 +18,7 @@
     "compression": "^1.6.0",
     "connect-busboy": "0.0.2",
     "cookie-parser": "^1.4.0",
+    "core-os": "^0.1.2",
     "express": "^4.13.3",
     "gulp": "^3.9.1",
     "gulp-angular-templatecache": "~1.8.0",

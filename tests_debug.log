@@ -1,2 +1,0 @@
-[Sat Sep 17 2016 19:07:55 GMT+0700 (ICT)] server's stdout "Unable to connect to the mongoDB server from environment variable MONGO_URL=mongodb://localhost:27017/mongo-sites. Error: { [MongoError: failed to connect to server [localhost:27017] on first connect]\n  name: 'MongoError',\n  message: 'failed to connect to server [localhost:27017] on first connect' }\n"
-[Sat Sep 17 2016 19:07:54 GMT+0700 (ICT)] server's stdout "called directly\n"

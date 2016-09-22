@@ -1,5 +1,5 @@
 var fs = require('fs');
-var tests = JSON.parse(fs.readFileSync('tests.json'));
+var tests = require('./tests_scenarios.js');
 var colors = require('colors');
 
 var written_path = [];
