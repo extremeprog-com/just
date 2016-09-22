@@ -1,21 +1,15 @@
-FROM ubuntu:16.04
+FROM ubuntu
+RUN echo 'deb http://nginx.org/packages/mainline/ubuntu/ trusty nginx' > /etc/apt/sources.list.d/nginx.list; apt-get update;
+RUN apt-get install -y --force-yes psmisc inotify-tools dnsmasq git wget cron nginx=1.9.15-1~trusty
 
-ENV PORT=80
-ENV PRODUCTION=1
+ADD https://raw.githubusercontent.com/tests-always-included/mo/master/mo /root/mo
 
-VOLUME /var/lib/mongodb
+RUN cd /root/ && git clone https://github.com/certbot/certbot && cd /root/certbot && ( ./certbot-auto -n || echo )
 
-RUN apt-get update
-RUN apt-get install -y --force-yes nodejs nodejs-legacy npm mongodb
-RUN npm install -g gulp
+ARG DOCKER_VERSION=1.9.1
+RUN cd /root/ && wget https://get.docker.com/builds/Linux/x86_64/docker-"$DOCKER_VERSION".tgz && tar zxvf docker-"$DOCKER_VERSION".tgz && ln -s /root/docker/docker /usr/bin/docker
 
-RUN mkdir -p /root/mongo-sites-api
-COPY package.json /root/mongo-sites-api/package.json
+COPY / /
 
-WORKDIR /root/mongo-sites-api
-RUN bash -c 'npm update || echo'
-COPY . /root/mongo-sites-api
-RUN gulp
-
-CMD bash /root/mongo-sites-api/run_app.sh
+CMD /run_app nginx
 

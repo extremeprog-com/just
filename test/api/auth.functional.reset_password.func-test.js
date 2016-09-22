@@ -12,7 +12,7 @@ require('../../tests_globals.js').init();
         var resetToken = '';
 
         it('should return reset link on request for resetting password', function(done) {
-            api_post('/api/request_reset_password', [{_id: user.email}], function(err, res) {
+            api_post('/api/auth/request_reset_password', [{_id: user.email}], function(err, res) {
                 assert.ifError(err);
 
                 assert(res);
@@ -26,7 +26,7 @@ require('../../tests_globals.js').init();
         });
 
         it('should reset password', function(done) {
-            api_post('/api/reset_password?' + resetToken, [{password: test_data.password}], function(err, res) {
+            api_post('/api/auth/reset_password?' + resetToken, [{password: test_data.password}], function(err, res) {
                 assert.ifError(err);
 
                 assert(res);

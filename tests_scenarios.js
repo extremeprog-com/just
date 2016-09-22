@@ -46,11 +46,15 @@ module.exports = {
                     "func api/auth.functional.reset_password: request reset password, add new password, login"
                 ],
                 "user should be able to update user data": [
-                    "func api/auth.functional.update_user: login, update data"
+                    "func api/auth.functional.update_user: login with an existing user, update user data"
                 ],
-                //generate should
                 "user should be able to delete another user": [
-                    'func api/auth.functional.delete_user: register new user, login with an existing user, return success on deleting new user, return error when trying to login with removed user'
+                    'func api/auth.functional.delete_user: register new user, login with an existing user, ' +
+                    'return success on deleting new user, return error when trying to login with removed user'
+                ],
+                "user should be able to change password": [
+                    "func api/auth.functional.change_password: login with an existing user, change password, logout, " +
+                    "return error on trying to login with old password, return success on trying to login with new password"
                 ]
             },
             "Attribute: Secure": {
@@ -59,6 +63,11 @@ module.exports = {
                 ],
                 "user should not be able verify wrong email": [
                     "func api/auth.secure.verify_wrong_email: register, verify wrong email"
+                ],
+                "when changing user data": [
+                    "unit api/auth.secure.change_password: return error on wrong old password, " +
+                    "return error if an old password equals to a new password, return error on wrong new password," +
+                    "return error for unauthorised user"
                 ]
             }
         },

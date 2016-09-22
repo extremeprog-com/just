@@ -252,8 +252,8 @@ function parser(data_handle, custom_handle) {
                         }
 
                     } catch (err) {
-                        res.send([err.message ? 'Server error: ' + err.message : err]);
                         console.error(err.message ? err.message + "\n" + err.stack : err);
+                        res.send([err.message ? 'Server error: ' + err.message : err]);
                     }
                 }
             });
@@ -541,7 +541,7 @@ app.post('/api/auth/check', parser(function (site, data, cb, user, res) {
 
 }));
 
-app.post('/api/request_reset_password', parser(function(site, data, cb, user, res, req) {
+app.post('/api/auth/request_reset_password', parser(function(site, data, cb, user, res, req) {
     if( !data[0]._id || !data[0]._id.trim().length ) {
         res.status(400);
         cb(['This user is not found in the system']);
@@ -590,7 +590,7 @@ app.post('/api/request_reset_password', parser(function(site, data, cb, user, re
 
 }));
 
-app.post('/api/reset_password', parser(function(site, data, cb, user, res, req) {
+app.post('/api/auth/reset_password', parser(function(site, data, cb, user, res, req) {
     try {
         var json = decrypt(req.query.code);
         var params = JSON.parse(json);
@@ -609,6 +609,68 @@ app.post('/api/reset_password', parser(function(site, data, cb, user, res, req) 
     var hash = new crypto.Hash('MD5');
     hash.update(managed_user._id + data[0].password + secret);
     managed_user.passwordHash = hash.digest('base64');
+
+    var collectionUsers = db.collection('site-' + site._id + '-users');
+
+    collectionUsers.findOne({_id: managed_user._id}, function(err, user_exists) {
+        if(user_exists) {
+            for (var i in managed_user) if (managed_user.hasOwnProperty(i) && ['_id'].indexOf(i) < 0 ) {
+                user_exists[i] = managed_user[i];
+            }
+            collectionUsers.updateOne({_id: managed_user._id}, user_exists, function(err, data) {
+                if(err) {
+                    cb(err);
+                } else {
+                    io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id + '-users' });
+                    cb(null, true); // success
+                }
+            })
+        } else {
+            res.status(400);
+            cb(['User with _id=' + managed_user._id + ' does not exist'])
+        }
+    });
+}));
+
+app.post('/api/auth/change_password', parser(function(site, data, cb, user, res, req) {
+
+    if(!user) {
+        res.status(401);
+        res.send(['Unauthorised requests are not allowed']);
+        return;
+    }
+
+    if(!data[0].old_password || !data[0].old_password.trim().length) {
+        res.status(400);
+        cb(['Old password is required']);
+        return;
+    }
+
+    if(!data[0].new_password || !data[0].new_password.trim().length) {
+        res.status(400);
+        cb(['New password can not be empty']);
+        return;
+    }
+
+    if(data[0].new_password.trim() === data[0].old_password.trim()) {
+        res.status(400);
+        cb(['New password can not be equal to an old password']);
+        return;
+    }
+
+    var old_password_hash = new crypto.Hash('MD5');
+    old_password_hash.update(user._id + data[0].old_password + secret);
+    var old_password_hash_check = old_password_hash.digest('base64');
+
+    if(old_password_hash_check !== user.passwordHash) {
+        res.status(400);
+        cb(['Old password is wrong']);
+        return;
+    }
+
+    var hash = new crypto.Hash('MD5');
+    hash.update(user._id + data[0].new_password + secret);
+    var managed_user = { _id: user._id, passwordHash: hash.digest('base64') };
 
     var collectionUsers = db.collection('site-' + site._id + '-users');
 
