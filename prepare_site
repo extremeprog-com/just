@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+
+const opt 		= require('node-getopt');
+const mongodb 	= require('mongodb');
+
+var params = opt.create([
+  ['h' , 'help'                , 'output usage information'],
+  [''  , 'site-name=<arg>'     , 'specify site name'],
+  [''  , 'default-admin=<arg>' , 'specify default admin email'],
+  [''  , 'domain-name=<arg>+'  , 'specidy domain name'],
+  [''  , 'free-register=<arg>' , 'specidy free register option for users (true|false)']
+])     
+.bindHelp() 
+.parseSystem();
+
+var free_register = params.options['free-register'] ? (params.options['free-register'] === 'true' ? true : false) : true;
+var site_to_update = {"_id": params.options['site-name']};
+
+if(params.options['free-register']) site_to_update['free_register'] = free_register;
+if(params.options['default-admin']) site_to_update['default_admin'] = params.options['default-admin'];
+if(params.options['domain-name']  ) site_to_update['names'] 		= params.options['domain-name'];
+
+var mongoClient = mongodb.MongoClient;
+var mongoHost   = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/mongo-sites';
+
+mongoClient.connect(mongoHost, function (err, db) {
+    if (err) {
+        console.log('Unable to connect to the mongoDB server from environment variable MONGO_URL=' + mongoHost + '. Error:', err);
+        setTimeout(function() {
+            process.exit();
+        }, 5000);
+    } else {
+        console.log('Connected to mongodb');
+
+        db.createCollection('_sites', function(err, collection) {
+        	collection.update(
+        		{"_id": params.options['site-name']}, 
+        		site_to_update,
+        		{upsert: true},
+        		function() {
+        			console.log('Collection _sites created. Site ' + params.options['site-name'] + ' added.');
+
+        			db.createCollection('site-' + params.options['site-name'] + '-users', function(err, collection) {
+						console.log('Collection site-' + params.options['site-name'] + '-users created');
+						db.close();
+					});		
+        		}
+        	);
+        });
+    }
+});
