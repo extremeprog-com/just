@@ -1,4 +1,4 @@
-mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi) {
+mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
     $scope.state = {};
     $scope.state.command = "";
     $scope.state.activeDataType = "";
@@ -135,13 +135,19 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi) {
     var listTemplates       = {};
     var allowedObjects      = null;
 
+    $scope.User = null;
+
     $mongoSitesApi.auth_check().then(function(User) {
+
+        $scope.User = User;
+
         objectRestrictions  = {};
         objectTemplates     = {};
         listTemplates       = {};
         allowedObjects      = null;
         $mongoSitesApi.mgoInterface.find({_type: 'Plugin'}).then(function(data) {
             substitute(data, {user: User});
+            $scope.pluginsReady = true;
             data.map(function(plugin) {
                 (plugin.allowedObjects || []).map(function(allowedObjectList) {
                     if(fitMongoFilter(User, allowedObjectList.userLike) && allowedObjectList && allowedObjectList.allowedTypes && allowedObjectList.allowedTypes.length) {
@@ -156,7 +162,6 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi) {
                     }
                 });
                 $scope.allowedObjects = allowedObjects;
-                $scope.pluginsReady = true;
                 console.log($scope.allowedObjects);
                 $scope.$$phase || $scope.$apply();
                 (plugin.objectRestrictions  || []).map(function(restriction) {
@@ -187,8 +192,13 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi) {
     //console.log(fitMongoFilter({rw: 2, kiki: {bubu: "tutu"}, dudu: ["a", "b"], kaka:22}, {"kiki.bubu": "tutu", dudu:"a"}));
 
     socket.on('Collection_Changed', function(data) {
-        console.log(data);
         $scope.loadDataTypes();
         $scope.runRequest();
     });
+
+    $scope.logout = function() {
+        $mongoSitesApi.auth_logout().then(function() {
+            $state.go("login");
+        });
+    }
 });
