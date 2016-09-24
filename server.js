@@ -530,7 +530,7 @@ app.post('/api/auth/update', parser(function(site, data, cb, user, res) {
         return;
     }
 
-    if (user._id != data[0]._id && user.admin) {
+    if (user._id != data[0]._id && !user.admin) {
         cb(['Only account owner or admin can do this']);
         return;
     }
