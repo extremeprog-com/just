@@ -25,10 +25,10 @@ classes.JohnnyGenerator = {
                                     , description   = matches[3];
 
                                 if (filename == request.params[1]) {
-                                    if (fs.existsSync('test/' + filename)) {
+                                    if (fs.existsSync(filename)) {
                                         console.error('The test file already exists.');
                                     } else {
-                                        var dirname = path.dirname('test/' + filename);
+                                        var dirname = path.dirname(filename);
                                         if (!fs.statSync(dirname).isDirectory()) {
                                             fs.mkdirSync(dirname);
                                         }
@@ -36,7 +36,7 @@ classes.JohnnyGenerator = {
                                         FireRequest(
                                             new JohnnyGenerator_GenerateRequest({
                                                 cases: description,
-                                                filename: 'test/' + filename
+                                                filename: filename
                                             }),
                                             function () {
                                             },
@@ -65,11 +65,11 @@ classes.JohnnyGenerator = {
         return function (success, fail) {
             var cases = request.cases.split(',');
             var its = cases.map(function (it) {
-                return '\nit("should ' + it.trimLeft() + '", function(done) {\n\n})';
+                return '\nit("should ' + it.trimLeft() + '", function(done) {\n\n});';
             });
 
             fs.writeFileSync(request.filename, its.join('\n'));
-            console.log('File ' + request.filename + ' has been generated.')
+            console.log('File ' + request.filename + ' has been generated.');
 
             success();
         }

@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "startdb": "mkdir -p ./data; mongod --smallfiles --dbpath=./data",
-    "test": "bash -c 'MOCHA_COLORS=true ./node_modules/.bin/mocha -b --sort --full-trace test/*/*.js | node tests_add_stack.js; test \"${PIPESTATUS[0]}\" -eq \"0\" && node tests_check.js'"
+    "test": "bash -c 'MOCHA_COLORS=true ./node_modules/.bin/mocha -b --sort --full-trace */_tests/*test.js | node tests_add_stack.js; test \"${PIPESTATUS[0]}\" -eq \"0\" && node tests_check.js'"
   },
   "dependencies": {
     "add-stream": "1.0.0",

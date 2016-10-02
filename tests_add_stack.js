@@ -33,13 +33,13 @@ process.stdin.on('readable', function() {
                 }
             }
         }
-        process.stdout.write(chunk)
+        process.stdout.write(chunk.replace(/Should /gi, ""))
     }
 });
 
 process.stdin.on('end', function() {
     process.stdout.write(contents);
     if(firstAtFile) {
-        console.log(fs.existsSync('tests_debug.log') ? "\nLogged resources:\n".red + fs.readFileSync('tests_debug.log').toString().split("\n").slice(0, 10).map(function(it) { return it.substr(0, 1024) }).join("\n") + "\n\n" : '');
+        console.log(fs.existsSync('tests_debug.log') ? "\nLogged resources:\n".red + fs.readFileSync('tests_debug.log').toString().split("\n").slice(0, 10).map(function(it) { return (it.length > 2048 ? it.substr(0, 1000) + '\n...\n' + it.substr(1000).substr(-1000) : it).replace(/\\n/g,"\n").replace(/[\n\\]"/g, "\"") }).join("\n\n") + "\n\n" : '');
     }
 });

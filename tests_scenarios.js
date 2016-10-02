@@ -40,34 +40,50 @@ module.exports = {
         "Component: Auth": {
             "Attribute: Functional": {
                 "user should be able to register": [
-                    "func api/auth.functional.register: register, verify email, login, logout"
+                    "func msa-http-layer/_tests/auth.functional.register: register, verify email, login, logout"
                 ],
                 "user should be able to reset password": [
-                    "func api/auth.functional.reset_password: request reset password, add new password, login"
+                    "func msa-http-layer/_tests/auth.functional.reset_password: request reset password, add new password, login"
                 ],
                 "user should be able to update user data": [
-                    "func api/auth.functional.update_user: login with an existing user, update user data"
+                    "func msa-http-layer/_tests/auth.functional.update_user: login with an existing user, update user data"
                 ],
                 "user should be able to delete another user": [
-                    'func api/auth.functional.delete_user: register new user, login with an existing user, ' +
+                    'func msa-http-layer/_tests/auth.functional.delete_user: register new user, login with an existing user, ' +
                     'return success on deleting new user, return error when trying to login with removed user'
                 ],
                 "user should be able to change password": [
-                    "func api/auth.functional.change_password: login with an existing user, change password, logout, " +
+                    "func msa-http-layer/_tests/auth.functional.change_password: login with an existing user, change password, logout, " +
                     "return error on trying to login with old password, return success on trying to login with new password"
                 ]
             },
             "Attribute: Secure": {
                 "user should not be able to register with already existing password": [
-                    "func api/auth.secure.register_wrong_credentials: register with wrong email, register with existing email, register with empty password"
+                    "func msa-http-layer/_tests/auth.secure.register_wrong_credentials: register with wrong email, register with existing email, register with empty password"
                 ],
                 "user should not be able verify wrong email": [
-                    "func api/auth.secure.verify_wrong_email: register, verify wrong email"
+                    "func msa-http-layer/_tests/auth.secure.verify_wrong_email: register, verify wrong email"
                 ],
                 "when changing user data": [
-                    "unit api/auth.secure.change_password: return error on wrong old password, " +
+                    "unit msa-http-layer/_tests/auth.secure.change_password: return error on wrong old password, " +
                     "return error if an old password equals to a new password, return error on wrong new password," +
                     "return error for unauthorised user"
+                ]
+            }
+        },
+
+        "Component: Plugins": {
+            "Attribute: Functional": {
+                "admin user should be able to manage plugins": [
+                    "func msa-http-layer/_tests/plugins.functional.manage_plugins: add plugin, return plugin list with newly added plugin"
+                    + "save plugin with other parameter, check that plugin updated, delete plugin, return plugin list without newly added plugin",
+                    "func msa-http-layer/_tests/plugins.functional.test_plugin_flag: add plugin that change test flag to 1, check that test flag is 1, "
+                    + "add plugin that change test flag to 0, check that test flag is 1, change last plugin order to 0, check check that test flag is 1 again"
+                ]
+            },
+            "Attribute: Secure": {
+                "common user should not be able to manage plugins": [
+                    "func msa-http-layer/_tests/plugins.secure.test_plugin: add should not work, save should not work, get should not work"
                 ]
             }
         },

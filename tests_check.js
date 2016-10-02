@@ -33,7 +33,7 @@ function write_path_and_message(path, message) {
             var type = matches[1];
             var filename =  matches[2] + '.' + type + '-test.js';
             var description = matches[3];
-            if(!fs.existsSync('test/' + filename)) {
+            if(!fs.existsSync(filename)) {
                 write_path_and_message(path, "file not found: ".blue + ' ' + description.red + ' ' + filename.red);
             }
         }

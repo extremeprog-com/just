@@ -61,6 +61,7 @@ create_user_for_test = function(email, password, cb) {
 
     api_post('/api/auth/register', [{ _id: email, password: password }], function(err, res) {
         api_post(res.body[1].activation_link, function(err, res) {
+
             api_post('/api/auth', [email, password], function(err, res) {
 
                 //user.token = res.body && res.body.result && res.body.result.auth_token;
@@ -98,8 +99,9 @@ initCookie = function(User) {
 
 api_get = function(url, cb) {
     if(!url.match(/^https?:\/\//)) url = "http://localhost:" + server_port + url;
+    log_resource(url, "request GET ");
     request.get({url: url, json: true, headers: headers, jar : jar || request.jar() }, function(err, res, body) {
-        log_resource(body, "request GET " + url + '. response ' + res.statusCode);
+        log_resource(body, "response for GET " + url + '. is ' + res.statusCode);
         cb(err, res, body);
     })
 };
@@ -110,8 +112,9 @@ api_post = function(url, data, cb) {
         cb = data;
         data = null;
     }
+    log_resource(url + ' data ' + JSON.stringify(data), "request POST ");
     request.post({url: url, json: true, headers: headers, jar : jar || request.jar(), body: data }, function(err, res, body) {
-        log_resource(body, "request POST " + url + ' data ' + JSON.stringify(data) + ' response ' + res.statusCode);
+        log_resource(body, "response for POST " + url + ' data ' + JSON.stringify(data) + ' is ' + res.statusCode);
         cb(err, res, body);
     })
 };
@@ -122,8 +125,9 @@ api_delete = function(url, data, cb) {
         cb = data;
         data = null;
     }
+    log_resource(url + ' data ' + JSON.stringify(data), "request DELETE ");
     request.delete({url: url, json: true, headers: headers, jar : jar || request.jar(), body: data }, function(err, res, body) {
-        log_resource(body, "request DELETE " + url + ' data ' + JSON.stringify(data) + ' response ' + res.statusCode);
+        log_resource(body, "response for DELETE " + url + ' data ' + JSON.stringify(data) + ' is ' + res.statusCode);
         cb(err, res, body);
     })
 };
@@ -131,7 +135,7 @@ api_delete = function(url, data, cb) {
 before(function(done) {
     //log_resource('trying to start', 'server');
     server_process = require('child_process').spawn(
-        'node', ['server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, ADMIN_USER: admin.email, MONGO_URL: mongo_url } }
+        'node', ['msa-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, ADMIN_USER: admin.email, MONGO_URL: mongo_url } }
     );
     server_process.stdout.on('data', function(chunk) {
         log_resource(chunk.toString(), "server's stdout");
@@ -199,7 +203,7 @@ var test_descriptions = (function iterate_descriptions(base, result, text) {
 })(tests, {});
 
 test_filestring = function(descr) {
-    var matches = new Error().stack.match(/test\/(.+?\-test.js):\d+/);
+    var matches = new Error().stack.match(/(.+?\-test.js):\d+/);
     return matches[0] + (descr !== false ?  ' (' + test_descriptions[matches[1]] + ')' : '')
 };
 
