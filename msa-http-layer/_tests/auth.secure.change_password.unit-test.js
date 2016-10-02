@@ -5,6 +5,7 @@ require('../../tests_globals.js').init();
         password: random_password()
     }
 ].map(function (test_data) {
+
         it("should return error for unauthorised user", function (done) {
             api_post(
                 '/api/auth/change_password'
@@ -123,6 +124,5 @@ require('../../tests_globals.js').init();
             )
         });
 
-        initCookie(false);
     }
 );

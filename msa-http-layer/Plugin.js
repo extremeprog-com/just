@@ -3,6 +3,7 @@ require('core-os');
 /** @name Plugin_ListChanged */
 Core.registerEventPoint('Plugin_ListChanged');
 Core.registerRequestPoint('Plugin_UpdateLocalRq');
+Core.registerRequestPoint('PluginUtilizer_MatchObjectRq');
 
 classes.Plugin = {
     initPluginsAPI: function() {
@@ -105,7 +106,13 @@ classes.Plugin = {
                         return;
                     }
 
-                    cb(null, _this.matchRules(site._id, user, data[0]));
+                    FireRequest(new PluginUtilizer_MatchObjectRq({
+                        site: site,
+                        user: user,
+                        obj : data[0]
+                    }), function(data) {
+                        cb(null, data);
+                    })
 
                 }));
             }
@@ -113,31 +120,41 @@ classes.Plugin = {
             success();
         };
     },
-    matchRules(site_id, user, obj) {
-        var name2rule = {};
+    matchRules() {
+        var request = CatchRequest(PluginUtilizer_MatchObjectRq);
 
-        function object_match(obj, pattern) {
-            var result = true;
-            Object.keys(pattern).map(function(key) {
-                if(pattern[key] != obj[key]) {
-                    result = false;
-                }
+        var site_id = request.site._id,
+            user    = request.user,
+            obj     = request.obj,
+            _this   = this
+        ;
+
+        return function(success, fail) {
+            var name2rule = {};
+
+            function object_match(obj, pattern) {
+                var result = true;
+                Object.keys(pattern).map(function(key) {
+                    if(pattern[key] != obj[key]) {
+                        result = false;
+                    }
+                });
+                return result;
+            }
+
+            _this.site2plugins[site_id].map(function(plugin) {
+                Object.keys(plugin).map(function(name) {
+                    if(plugin[name] instanceof Array) {
+                        plugin[name].map(function(rule) {
+                            if(object_match(user, rule[0]) && object_match(obj, rule[1])) {
+                                name2rule[name] = rule[2];
+                            }
+                        })
+                    }
+                })
             });
-            return result;
+            success(name2rule);
         }
-
-        this.site2plugins[site_id].map(function(plugin) {
-            Object.keys(plugin).map(function(name) {
-                if(plugin[name] instanceof Array) {
-                    plugin[name].map(function(rule) {
-                        if(object_match(user, rule[0]) && object_match(obj, rule[1])) {
-                            name2rule[name] = rule[2];
-                        }
-                    })
-                }
-            })
-        });
-        return name2rule;
     },
     site2plugins: {},
     buildMap: function() {

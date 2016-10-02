@@ -82,14 +82,16 @@ var headers = {
 
 jar = false;
 
-initCookie = function(User) {
+initCookie = function(User, opt_use_it) {
 
-    uit && uit('[init empty cookie]', i);
+    ((opt_use_it || typeof opt_use_it === 'undefined') && uit)
+        ? uit(User ? '[init cookie with ' + (User.email == admin.email ? 'admin' : 'user') + ']' : (User === false ? '[disable cookie]' : '[create empty cookie]'), i)
+        : i();
 
     function i() {
         if(User === false) {
             jar = false;
-        } else if(User === true || User === undefined) {
+        } else if(User === true || typeof User === 'undefined') {
             jar = request.jar();
         } else {
             jar = User.jar;
@@ -220,6 +222,7 @@ module.exports = {
                     cb(done);
                 });
             };
+            initCookie(false, false);
         }
     }
 };

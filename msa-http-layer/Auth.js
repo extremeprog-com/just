@@ -119,7 +119,12 @@ classes.Auth = {
                                     html    : 'Please activate your account by link: <a href="' + link + '">' + link + '</a>' // html body
                                 };
 
-                                if(process.env.TEST_ENV != 'DEV_TEST') {
+                                var response = {};
+
+                                if(process.env.TEST_ENV == 'DEV_TEST') {
+                                    response.activation_link = link;
+                                    response.mailOptions = mailOptions;
+                                } else {
                                     // send mail with defined transport object
                                     transporter.sendMail(mailOptions, function(error, info) {
                                         if(error) {
@@ -129,7 +134,7 @@ classes.Auth = {
                                     });
                                 }
 
-                                cb(null, process.env.TEST_ENV == 'DEV_TEST' ? {activation_link: link} : {sdfijsdfioj:239874289}); // success
+                                cb(null, response); // success
                             }
                         })
                     }
