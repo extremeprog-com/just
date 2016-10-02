@@ -150,13 +150,13 @@ classes.Plugin = {
             }
 
             function merge(result, add) {
-                if(typeof result != 'object') {
-                    return add;
-                }
                 if(typeof add != 'object') {
                     return add;
                 }
                 Object.keys(add).map(function(key) {
+                    if(typeof result != 'object') {
+                        result[key] = {}
+                    }
                     result[key] = merge(result[key], add[key]);
                 });
                 return result;
@@ -188,31 +188,34 @@ classes.Plugin = {
         return function(success, fail) {
             if(request instanceof MSAServer_Init) {
                 fs.readdirSync('plugins').map(function(site_id) {
-                    _this.filePlugins[site_id] = [];
-                    fs.statSync('plugins/' + site_id).isDirectory() && fs.readdirSync('plugins/' + site_id).map(function(file) {
-                        if(file.match(/\.json$/)) {
-                            try {
-                                var plugin = JSON.parse(fs.readFileSync('plugins/' + site_id + '/' + file));
+                    if(fs.statSync('plugins/' + site_id).isDirectory()) {
+                        _this.filePlugins[site_id] = [];
 
-                                (function recursivelyLoadFiles(obj) {
-                                    Object.keys(obj).map(function(key) {
-                                        if(typeof obj[key] == 'string' && obj[key] && ['.', '..'].indexOf(obj[key]) == -1) {
-                                            if(fs.existsSync('plugins/' + site_id + '/' + obj[key])) {
-                                                obj[key] = fs.readFileSync('plugins/' + site_id + '/' + obj[key]).toString();
+                        fs.readdirSync('plugins/' + site_id).map(function(file) {
+                            if(file.match(/\.json$/)) {
+                                try {
+                                    var plugin = JSON.parse(fs.readFileSync('plugins/' + site_id + '/' + file));
+
+                                    (function recursivelyLoadFiles(obj) {
+                                        Object.keys(obj).map(function(key) {
+                                            if(typeof obj[key] == 'string' && obj[key] && ['.', '..'].indexOf(obj[key]) == -1) {
+                                                if(fs.existsSync('plugins/' + site_id + '/' + obj[key])) {
+                                                    obj[key] = fs.readFileSync('plugins/' + site_id + '/' + obj[key]).toString();
+                                                }
                                             }
-                                        }
-                                        if(typeof obj[key] == 'object') {
-                                            recursivelyLoadFiles(obj[key]);
-                                        }
-                                    })
-                                })(plugin);
+                                            if(typeof obj[key] == 'object') {
+                                                recursivelyLoadFiles(obj[key]);
+                                            }
+                                        })
+                                    })(plugin);
 
-                                _this.filePlugins[site_id].push(plugin);
-                            } catch(e) {
-                                console.log('Cannot load plugin plugins/' + site_id + '/' + file + ': ' + e);
+                                    _this.filePlugins[site_id].push(plugin);
+                                } catch(e) {
+                                    console.log('Cannot load plugin plugins/' + site_id + '/' + file + ': ' + e);
+                                }
                             }
-                        }
-                    })
+                        })
+                    }
                 })
             }
 
