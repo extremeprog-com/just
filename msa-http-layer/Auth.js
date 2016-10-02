@@ -253,9 +253,9 @@ classes.Auth = {
                         FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: found_user}), function(data) {
 
                             var variables = {
-                                activation_link : link,
-                                activation_code : code,
-                                user            : found_user
+                                reseet_password_link : link,
+                                reset_token          : code,
+                                user                 : found_user
                             };
 
                             // setup e-mail data with unicode symbols
@@ -267,7 +267,7 @@ classes.Auth = {
                                     || 'Reset password for user {{user._id}}'
                                 )(variables),
                                 html    : new ngcompile().$interpolate(
-                                    (data && data.reset_password_email && data.reset_password_email.subject)
+                                    (data && data.reset_password_email && data.reset_password_email.html)
                                     || 'Please activate your account by link:  <a href="{{ reset_password_link }}">{{ reset_password_link }}</a>' // html body
                                 )(variables)
                             };

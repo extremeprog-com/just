@@ -122,7 +122,7 @@ classes.Plugin = {
             success();
         };
     },
-    matchRules() {
+    matchRules: function() {
         var request = CatchRequest(PluginUtilizer_MatchObjectRq);
 
         var site_id = request.site._id,
