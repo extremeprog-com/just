@@ -303,12 +303,19 @@ app.post('/api/_update', parser(function (site, data, cb, user) {
         return;
     }
 
+    var params = [data[0], data[1]];
+    if(data[2] && !(data[2] instanceof Function)) {
+        params.push(data[2]);
+    }
+
+    params.push(function(err, res) {
+        io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id });
+        cb && cb(err, res);
+    });
+
     mongodb.Collection.prototype
         .update
-        .call(db.collection('site-' + site._id), data[0], data[1], function(err, res) {
-            io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id });
-            cb && cb(err, res);
-        });
+        .apply(db.collection('site-' + site._id), params);
 }));
 
 app.post('/api/_remove', parser(function (site, data, cb, user) {
