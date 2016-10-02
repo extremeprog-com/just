@@ -3,6 +3,46 @@ require('../../tests_globals.js').init();
 initCookie(admin);
 
 var Plugin1, Plugin2;
+var pluginFileContent = "hahaha <div><div></div>";
+
+it("add file plugin that change test flag to 2 for {qqq: 'iii'}", function(done) {
+    var fs = require('fs');
+
+    fs.mkdir('plugins/test', function() {
+        fs.writeFileSync('plugins/test/test_plugin.json', JSON.stringify({_type: "Plugin", "title": random_title() + random_title(), tf: 2, test_flag: [ [{},{qqq: 'iii'}, {x: 2, html: 'test_plugin.html'}]] }) );
+        fs.writeFileSync('plugins/test/test_plugin.html', pluginFileContent );
+        done();
+    });
+});
+
+restart_server();
+
+it("should check that test flag is 2 for filter {qqq:iii} and file content was loaded", function(done) {
+    api_post('/api/plugins/test', [{qqq: 'iii'}], function(err, res) {
+        assert.ifError(err);
+
+        assert(res);
+        assert(res.statusCode == 200);
+        assert(res.body);
+        assert(res.body[0] === null);
+        assert(res.body[1]);
+        assert(res.body[1].test_flag.x == 2);
+        assert(res.body[1].test_flag.html == pluginFileContent);
+
+        done();
+    })
+});
+
+it("remove plugin file", function(done) {
+    var fs = require('fs');
+
+    fs.unlink('plugins/test/test_plugin.json', function() {
+        fs.unlink('plugins/test/test_plugin.html', function() {
+            done()
+        })
+    });
+});
+
 
 it("should add plugin with object filter {qqq:eee} that change test flag to 1", function(done) {
     api_post('/api/plugins/save', [ {_type: "Plugin", "title": random_title() + random_title(), tf: 1, test_flag: [ [{},{qqq: 'eee'}, 1]] } ], function(err, res) {

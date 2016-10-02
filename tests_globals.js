@@ -134,6 +134,53 @@ api_delete = function(url, data, cb) {
     })
 };
 
+restart_server = function() {
+    uit('[restart server]', function(done) {
+        stop_server(function() {
+            start_server(function() {
+                done()
+            })
+        });
+    });
+};
+
+start_server = function(cb) {
+    //log_resource('trying to start', 'server');
+    server_process = require('child_process').spawn(
+        'node', ['msa-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, ADMIN_USER: admin.email, MONGO_URL: mongo_url } }
+    );
+    server_process.stdout.on('data', function(chunk) {
+        log_resource(chunk.toString(), "server's stdout");
+    });
+    server_process.stderr.on('data', function(chunk) {
+        log_resource(chunk.toString(), "server's stderr");
+    });
+    (function waitServer() {
+        request("http://localhost:" + server_port + "/", function(err) {
+            if (err) {
+                waitServer()
+            } else {
+                cb()
+            }
+        })
+    })();
+};
+
+stop_server = function(cb) {
+    server_process.kill();
+    setTimeout(function() {
+        if(server_process.kill(0)) {
+            stop_server(cb);
+        } else {
+            cb && cb();
+        }
+    }, 20)
+};
+
+process.on('exit', function() {
+    stop_server();
+});
+
 before(function(done) {
     //log_resource('trying to start', 'server');
     server_process = require('child_process').spawn(
@@ -166,10 +213,10 @@ before(function(done) {
     })();
 });
 
-after(function() {
-    //log_resource('stopping', 'server');
-    server_process.kill()
-});
+//after(function() {
+//    //log_resource('stopping', 'server');
+//    server_process.kill()
+//});
 
 var fs = require('fs');
 var logged_resources = [];

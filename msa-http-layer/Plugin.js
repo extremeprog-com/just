@@ -1,5 +1,7 @@
 require('core-os');
 
+var fs = require('fs');
+
 /** @name Plugin_ListChanged */
 Core.registerEventPoint('Plugin_ListChanged');
 Core.registerRequestPoint('Plugin_UpdateLocalRq');
@@ -175,6 +177,7 @@ classes.Plugin = {
         }
     },
     site2plugins: {},
+    filePlugins: {},
     buildMap: function() {
         var
               request = CatchRequest(MSAServer_Init, Plugin_UpdateLocalRq)
@@ -183,6 +186,50 @@ classes.Plugin = {
             ;
 
         return function(success, fail) {
+            if(request instanceof MSAServer_Init) {
+                fs.readdirSync('plugins').map(function(site_id) {
+                    _this.filePlugins[site_id] = [];
+                    fs.statSync('plugins/' + site_id).isDirectory() && fs.readdirSync('plugins/' + site_id).map(function(file) {
+                        if(file.match(/\.json$/)) {
+                            try {
+                                var plugin = JSON.parse(fs.readFileSync('plugins/' + site_id + '/' + file));
+
+                                (function recursivelyLoadFiles(obj) {
+                                    Object.keys(obj).map(function(key) {
+                                        if(typeof obj[key] == 'string' && obj[key] && ['.', '..'].indexOf(obj[key]) == -1) {
+                                            if(fs.existsSync('plugins/' + site_id + '/' + obj[key])) {
+                                                obj[key] = fs.readFileSync('plugins/' + site_id + '/' + obj[key]).toString();
+                                            }
+                                        }
+                                        if(typeof obj[key] == 'object') {
+                                            recursivelyLoadFiles(obj[key]);
+                                        }
+                                    })
+                                })(plugin);
+
+                                _this.filePlugins[site_id].push(plugin);
+                            } catch(e) {
+                                console.log('Cannot load plugin plugins/' + site_id + '/' + file + ': ' + e);
+                            }
+                        }
+                    })
+                })
+            }
+
+            _this.site2plugins = {};
+
+            (function copy(to, from) {
+                Object.keys(from).map(function(key) {
+                    if(typeof from[key] == 'object') {
+                        if(typeof to[key] != 'object') {
+                            to[key] = from[key] instanceof Array ? [] : {};
+                        }
+                        copy(to[key], from[key])
+                    } else {
+                        to[key] = from[key];
+                    }
+                })
+            })(_this.site2plugins, _this.filePlugins);
 
             var pending = 0;
             app.db.listCollections().toArray(function(err, data) {
@@ -195,10 +242,10 @@ classes.Plugin = {
                                 fail();
                                 return;
                             }
-                            _this.site2plugins[matches[1]] = docs;
+                            _this.site2plugins[matches[1]] = (_this.site2plugins[matches[1]] || []).concat(docs);
                             pending--;
                             if(!pending) {
-                                success()
+                                success();
                             }
                         })
                     }
