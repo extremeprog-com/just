@@ -118,7 +118,8 @@ classes.Auth = {
                                     var variables = {
                                         activation_link : link,
                                         activation_code : code,
-                                        user            : new_user
+                                        user            : new_user,
+                                        site            : site
                                     };
 
                                     // setup e-mail data with unicode symbols
@@ -255,7 +256,8 @@ classes.Auth = {
                             var variables = {
                                 reseet_password_link : link,
                                 reset_token          : code,
-                                user                 : found_user
+                                user                 : found_user,
+                                site                 : site
                             };
 
                             // setup e-mail data with unicode symbols
