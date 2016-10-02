@@ -441,7 +441,7 @@ app.post('/api/auth/register', parser(function (site, data, cb, user, res, req) 
 
                     // setup e-mail data with unicode symbols
                     var mailOptions = {
-                        from    : process.env.EMAIL_FROM || 'noreply@' + site.names[0], // sender address
+                        from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0]), // sender address
                         to      : new_user._id, // list of receivers
                         subject : 'Registering new user', // Subject line
                         html    : 'Please activate your account by link: <a href="' + link + '">' + link + '</a>' // html body
@@ -537,7 +537,7 @@ app.post('/api/auth/update', parser(function(site, data, cb, user, res) {
         return;
     }
 
-    if (user._id != data[0]._id && user.admin) {
+    if (user._id != data[0]._id && !user.admin) {
         cb(['Only account owner or admin can do this']);
         return;
     }

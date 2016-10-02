@@ -2,6 +2,10 @@ html, body { margin: 0; padding: 0; font-size: 14px; font-family: "Helvetica Neu
 ul { list-style-type: none; margin: 0; padding: 0; }
 li { margin: 0; padding: 0; }
 
+.msa-no-access { display: block; top: 50%; position: absolute; width: 100%; text-align: center; }
+.msa-no-access p { font-size: 1.3rem; }
+.msa-no-access span { cursor: pointer; text-decoration: underline; }
+
 .mgo-admin-wrapper { position: absolute; top: 0; left: 0; right: 0; bottom: 0 }
 .mgo-admin-panel { height: 2em; width: 100%; position: absolute; top: 0; left: 0; background: white; line-height: 2em; }
 .mgo-admin-panel h3 { margin: 0; margin-left: 0.5em; display: inline-block; }
@@ -23,8 +27,6 @@ li { margin: 0; padding: 0; }
 .mgo-admin-data li:hover { background: #fff1de!important; }
 .mgo-admin-data li:nth-child(even) { background: rgba(31,39,47, 0.15); }
 .mgo-admin-data li:nth-child(odd) { background: #fff; }
-
-
 
 .mgo-login-form-wrap { }
 .mgo-login-form { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
