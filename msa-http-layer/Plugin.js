@@ -162,7 +162,7 @@ classes.Plugin = {
                 return result;
             }
 
-            _this.site2plugins[site_id].map(function(plugin) {
+            (_this.site2plugins[site_id] || []).map(function(plugin) {
                 Object.keys(plugin).map(function(name) {
                     if(plugin[name] instanceof Array) {
                         plugin[name].map(function(rule) {
