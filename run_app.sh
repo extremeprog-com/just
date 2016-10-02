@@ -19,4 +19,4 @@ fi
 perl -pi -e 's/{site_name}/'`echo $MSA_SITE_NAME`'/g' mgosites-admin/index.html
 
 cd /root/mongo-sites-api/
-node server.js
+node msa-http-layer/server.js
