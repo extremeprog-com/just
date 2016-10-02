@@ -69,6 +69,16 @@ module.exports = {
                     "return error if an old password equals to a new password, return error on wrong new password," +
                     "return error for unauthorised user"
                 ]
+            },
+            "Attribute: Configurable": {
+                "programmer should be able to customise reset password email": [
+                    "func msa-http-layer/_tests/auth.configurable.reset_password_email: add plugin with reset password email template, " +
+                    "get mail options suited to plugin on request to reset password"
+                ],
+                "programmer should be able to customise register email": [
+                    "func msa-http-layer/_tests/auth.configurable.register_email: add plugin with register email template, " +
+                    "get mail options suited to plugin on register"
+                ]
             }
         },
 

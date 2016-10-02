@@ -250,7 +250,7 @@ classes.Auth = {
                             });
                         }
 
-                        cb(null, process.env.TEST_ENV == 'DEV_TEST' ? {reset_token: reset_token} : {sdfijsdfioj:239874289}); // success
+                        cb(null, process.env.TEST_ENV == 'DEV_TEST' ? {reset_token: reset_token, mailOptions: mailOptions} : {sdfijsdfioj:239874289}); // success
                     } else {
                         res.status(400);
                         cb(['User with _id=' + data[0]._id + ' does not exist'])
