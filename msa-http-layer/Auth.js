@@ -7,6 +7,8 @@ const htmlToText  = require('nodemailer-html-to-text').htmlToText;
 const querystring = require("querystring");
 const utils       = require("./Utils.js");
 
+const ngcompile = require('ng-node-compile');
+
 transporter.use('compile', htmlToText());
 
 classes.Auth = {
@@ -111,30 +113,45 @@ classes.Auth = {
 
                                 console.log('activation_link: ' + link);
 
-                                // setup e-mail data with unicode symbols
-                                var mailOptions = {
-                                    from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
-                                    to      : new_user._id, // list of receivers
-                                    subject : 'Registering new user', // Subject line
-                                    html    : 'Please activate your account by link: <a href="' + link + '">' + link + '</a>' // html body
-                                };
+                                FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: new_user}), function(data) {
 
-                                var response = {};
+                                    var variables = {
+                                        activation_link : link,
+                                        activation_code : code,
+                                        user            : new_user
+                                    };
 
-                                if(process.env.TEST_ENV == 'DEV_TEST') {
-                                    response.activation_link = link;
-                                    response.mailOptions = mailOptions;
-                                } else {
-                                    // send mail with defined transport object
-                                    transporter.sendMail(mailOptions, function(error, info) {
-                                        if(error) {
-                                            return console.log(error);
-                                        }
-                                        console.log('Message sent: ' + info.response);
-                                    });
-                                }
+                                    // setup e-mail data with unicode symbols
+                                    var mailOptions = {
+                                        from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
+                                        to      : new_user._id, // list of receivers
+                                        subject : new ngcompile().$interpolate(
+                                            (data && data.register_email && data.register_email.subject) ||
+                                            'Registering new user {{user._id}}'
+                                        )(variables),
+                                        html    : new ngcompile().$interpolate(
+                                            (data && data.register_email && data.register_email.html) ||
+                                            'Please activate your account by link: <a href="{{ activation_link }}">{{ activation_link }}</a>'
+                                        )(variables)
+                                    };
 
-                                cb(null, response); // success
+                                    var response = {};
+
+                                    if(process.env.TEST_ENV == 'DEV_TEST') {
+                                        response.activation_link = link;
+                                        response.mailOptions = mailOptions;
+                                    } else {
+                                        // send mail with defined transport object
+                                        transporter.sendMail(mailOptions, function(error, info) {
+                                            if(error) {
+                                                return console.log(error);
+                                            }
+                                            console.log('Message sent: ' + info.response);
+                                        });
+                                    }
+
+                                    cb(null, response); // success
+                                })
                             }
                         })
                     }
@@ -219,38 +236,60 @@ classes.Auth = {
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
 
-                collectionUsers.findOne({_id: data[0]._id}, function(err, user_exists) {
-                    if(user_exists) {
+                collectionUsers.findOne({_id: data[0]._id}, function(err, found_user) {
+                    if(found_user) {
 
                         // generate reset password link
                         var code = utils.encrypt(JSON.stringify({
                             date: new Date().getTime() / 1000,
                             r: Math.random().toString().substr(2),
-                            email: data[0]._id,
+                            email: found_user._id,
                             site: site._id
                         }));
                         var reset_token = querystring.stringify({code: code});
                         var link = 'http://' + req.headers.host + '/api/auth/reset_password?' + reset_token;
 
-                        // setup e-mail data with unicode symbols
-                        var mailOptions = {
-                            from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
-                            to      : data[0]._id, // list of receivers
-                            subject : 'Registering new user', // Subject line
-                            html    : 'Please activate your account by link: <a href="' + link + '">' + link + '</a>' // html body
-                        };
 
-                        if(process.env.TEST_ENV != 'DEV_TEST') {
-                            // send mail with defined transport object
-                            transporter.sendMail(mailOptions, function(error, info) {
-                                if(error){
-                                    return console.log(error);
-                                }
-                                console.log('Message sent: ' + info.response);
-                            });
-                        }
+                        FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: found_user}), function(data) {
 
-                        cb(null, process.env.TEST_ENV == 'DEV_TEST' ? {reset_token: reset_token, mailOptions: mailOptions} : {sdfijsdfioj:239874289}); // success
+                            var variables = {
+                                activation_link : link,
+                                activation_code : code,
+                                user            : found_user
+                            };
+
+                            // setup e-mail data with unicode symbols
+                            var mailOptions = {
+                                from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
+                                to      : found_user._id, // list of receivers
+                                subject : new ngcompile().$interpolate(
+                                    (data && data.reset_password_email && data.reset_password_email.subject)
+                                    || 'Reset password for user {{user._id}}'
+                                )(variables),
+                                html    : new ngcompile().$interpolate(
+                                    (data && data.reset_password_email && data.reset_password_email.subject)
+                                    || 'Please activate your account by link:  <a href="{{ reset_password_link }}">{{ reset_password_link }}</a>' // html body
+                                )(variables)
+                            };
+
+                            var response = {};
+
+                            if(process.env.TEST_ENV == 'DEV_TEST') {
+                                response.reset_token = reset_token;
+                                response.mailOptions = mailOptions;
+                            } else {
+                                // send mail with defined transport object
+                                transporter.sendMail(mailOptions, function(error, info) {
+                                    if(error) {
+                                        return console.log(error);
+                                    }
+                                    console.log('Message sent: ' + info.response);
+                                });
+                            }
+
+                            cb(null, response); // success
+
+                        });
                     } else {
                         res.status(400);
                         cb(['User with _id=' + data[0]._id + ' does not exist'])

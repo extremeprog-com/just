@@ -133,6 +133,11 @@ classes.Plugin = {
             var name2rule = {};
 
             function object_match(obj, pattern) {
+
+                if(typeof obj != 'object' && pattern != 'object') {
+                    return obj == pattern;
+                }
+
                 var result = true;
                 Object.keys(pattern).map(function(key) {
                     if(pattern[key] != obj[key]) {
@@ -142,12 +147,25 @@ classes.Plugin = {
                 return result;
             }
 
+            function merge(result, add) {
+                if(typeof result != 'object') {
+                    return add;
+                }
+                if(typeof add != 'object') {
+                    return add;
+                }
+                Object.keys(add).map(function(key) {
+                    result[key] = merge(result[key], add[key]);
+                });
+                return result;
+            }
+
             _this.site2plugins[site_id].map(function(plugin) {
                 Object.keys(plugin).map(function(name) {
                     if(plugin[name] instanceof Array) {
                         plugin[name].map(function(rule) {
                             if(object_match(user, rule[0]) && object_match(obj, rule[1])) {
-                                name2rule[name] = rule[2];
+                                name2rule[name] = merge(name2rule[name], rule[2]);
                             }
                         })
                     }
