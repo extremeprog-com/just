@@ -102,7 +102,7 @@ app.get('/+mongoSitesApi.js$', function (req, res) {
     var origin = url.parse(req.headers.referer || 'http://localhost').host.replace(/^\d+\./,'');
 
     function send(site) {
-        fs.readFile('../msa-jsapi-layer/mongoSitesApi.js', function (err, data) {
+        fs.readFile('./msa-jsapi-layer/mongoSitesApi.js', function (err, data) {
             res.send(data.toString().replace(/\{site\}/g, site).replace(/\{api_url\}/g, '//' + req.headers.host));
         });
     }
@@ -130,12 +130,12 @@ app.get('/+mongoSitesApi.angular.js$', function (req, res) {
 
     res.contentType('text/javascript');
 
-    fs.readFile('../msa-jsapi-layer/mongoSitesApi.angular.js', function (err, data) {
+    fs.readFile('./msa-jsapi-layer/mongoSitesApi.angular.js', function (err, data) {
         res.send(data.toString());
     });
 });
 
-app.use(express.static(__dirname + '../'));
+app.use(express.static(__dirname + '/../'));
 
 app.options('/api/:method/:submethod?', function (req, res) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
