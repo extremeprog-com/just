@@ -153,10 +153,10 @@ classes.Plugin = {
                 if(typeof add != 'object') {
                     return add;
                 }
+                if(typeof result != 'object') {
+                    result = {}
+                }
                 Object.keys(add).map(function(key) {
-                    if(typeof result != 'object') {
-                        result[key] = {}
-                    }
                     result[key] = merge(result[key], add[key]);
                 });
                 return result;
