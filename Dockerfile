@@ -11,5 +11,5 @@ RUN cd /root/ && wget https://get.docker.com/builds/Linux/x86_64/docker-"$DOCKER
 
 COPY / /
 
-CMD /run_app nginx
+CMD /run_app.sh nginx
 
