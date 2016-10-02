@@ -141,8 +141,8 @@ classes.Plugin = {
                 }
 
                 var result = true;
-                Object.keys(pattern).map(function(key) {
-                    if(pattern[key] != obj[key]) {
+                Object.keys(pattern || {}).map(function(key) {
+                    if(pattern[key] != (obj || {})[key]) {
                         result = false;
                     }
                 });
