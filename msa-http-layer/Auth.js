@@ -255,7 +255,7 @@ classes.Auth = {
                         FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: found_user}), function(data) {
 
                             var variables = {
-                                reseet_password_link   : link,
+                                reset_password_link    : link,
                                 reset_token            : code,
                                 reset_token_urlencoded : require("querystring").stringify({t:code}).replace(/^t=/,''),
                                 user                   : found_user,

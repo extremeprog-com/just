@@ -137,7 +137,7 @@ classes.Plugin = {
             function object_match(obj, pattern) {
 
                 if(typeof obj != 'object' && pattern != 'object') {
-                    return obj == pattern;
+                    return (obj || {}) + '' == (pattern || {}) + '';
                 }
 
                 var result = true;
