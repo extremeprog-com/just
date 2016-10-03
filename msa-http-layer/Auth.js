@@ -116,10 +116,11 @@ classes.Auth = {
                                 FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: new_user}), function(data) {
 
                                     var variables = {
-                                        activation_link : link,
-                                        activation_code : code,
-                                        user            : new_user,
-                                        site            : site
+                                        activation_link            : link,
+                                        activation_code            : code,
+                                        activation_code_urlencoded : require("querystring").stringify({t:code}).replace(/^t=/,''),
+                                        user                       : new_user,
+                                        site                       : site
                                     };
 
                                     // setup e-mail data with unicode symbols
@@ -254,10 +255,11 @@ classes.Auth = {
                         FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: found_user}), function(data) {
 
                             var variables = {
-                                reseet_password_link : link,
-                                reset_token          : code,
-                                user                 : found_user,
-                                site                 : site
+                                reseet_password_link   : link,
+                                reset_token            : code,
+                                reset_token_urlencoded : require("querystring").stringify({t:code}).replace(/^t=/,''),
+                                user                   : found_user,
+                                site                   : site
                             };
 
                             // setup e-mail data with unicode symbols
