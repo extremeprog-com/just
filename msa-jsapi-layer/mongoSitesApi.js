@@ -288,7 +288,7 @@ mongoSitesApi = (function() {
             return this._call('auth/request_reset_password', [options])
         },
         auth_reset_password: function(options, reset_token) {
-            return this._call('auth/reset_password?' + reset_token, [options])
+            return this._call('auth/reset_password?code=' + reset_token, [options])
         },
         auth_change_password: function(options) {
             return this._call('auth/change_password', [options]);
