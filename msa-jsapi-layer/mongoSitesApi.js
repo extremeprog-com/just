@@ -180,7 +180,7 @@ mongoSitesApi = (function() {
         /** @method Save object and return it in callback (with updated timestamp). Insert action report to log. */
         save: function (object) {
             return new Promise(function (resolve, reject) {
-                mongoSitesApi._call('save', object).then(function (data) {
+                mongoSitesApi._call('save', [object]).then(function (data) {
                     var i;
                     for (i in data) {
                         if (data.hasOwnProperty(i)) {

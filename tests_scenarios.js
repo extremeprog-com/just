@@ -98,6 +98,15 @@ module.exports = {
             }
         },
 
+        "Component: Snapshots": {
+            "Attribute: Functional": {
+                "save function should work correctly": [
+                    "func msa-http-layer/_tests/snapshots.functional.save_with_snapshot: save object, update object, get snapshot and check fields",
+                    "func msa-http-layer/_tests/snapshots.functional.save_with_excluded_fields: save object with excluded fields, get snapshot without excluded fields"
+                ]
+            }
+        },
+
         "register/activation/login/logout should be foolproof": [
             "func api/rubbish : try to send some bad values to register/login/update user api (too long, empty, wrong format)"
         ],
