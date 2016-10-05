@@ -1,3 +1,9 @@
+/**
+ * @license MongoSitesAPI v0.7.0
+ * (c) 2015-2016 extremeprog.com https://github.com/extremeprog-com/mongo-sites-api
+ * License: MIT
+ */
+
 mongoSitesApi = (function() {
 
     function _hmap(object, fn) {

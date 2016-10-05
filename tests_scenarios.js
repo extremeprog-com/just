@@ -68,6 +68,9 @@ module.exports = {
                     "unit msa-http-layer/_tests/auth.secure.change_password: return error on wrong old password, " +
                     "return error if an old password equals to a new password, return error on wrong new password," +
                     "return error for unauthorised user"
+                ],
+                "user should not be able to use the same link several times to reset password": [
+                    "func msa-http-layer/_tests/auth.secure.reset_password_link: request reset password, reset password, return error on reset password with already used link"
                 ]
             },
             "Attribute: Configurable": {
@@ -112,15 +115,13 @@ module.exports = {
             }
         },
 
-        "register/activation/login/logout should be foolproof": [
-            "func api/rubbish : try to send some bad values to register/login/update user api (too long, empty, wrong format)"
-        ],
-        "save/snapshots/revert should work": [
-            "func js/save_snapshot_revert : make save/snapshot/revert"
-        ],
-        "should not view restricted objects": [
-            "func api/restrict : add user, add plugin, check that user can't get restricted objects"
-        ]
+        "Component: Content": {
+            "Attribute: Functional": {
+                "user should be able to get script files": [
+                    "unit msa-http-layer/_tests/content.functional.get_script_files: get mongoSitesApi.js, get mongoSitesApi.angular.js"
+                ]
+            }
+        }
     },
     "MSA server implementation layer": {
     },
