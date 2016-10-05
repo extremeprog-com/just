@@ -104,6 +104,11 @@ module.exports = {
                     "func msa-http-layer/_tests/snapshots.functional.save_with_snapshot: save object, update object, get snapshot and check fields",
                     "func msa-http-layer/_tests/snapshots.functional.save_with_excluded_fields: save object with excluded fields, get snapshot without excluded fields"
                 ]
+            },
+            "Attribute: Foolproof": {
+                "save function should work correctly": [
+                    "func msa-http-layer/_tests/snapshots.foolproof.save_without_changes: save object, save the same object, return only one snapshot"
+                ]
             }
         },
 
