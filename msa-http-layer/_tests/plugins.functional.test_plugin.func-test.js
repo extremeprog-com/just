@@ -9,15 +9,22 @@ it("add file plugin that change test flag to 2 for {qqq: 'iii'}", function(done)
     var fs = require('fs');
 
     fs.mkdir('plugins/test', function() {
-        fs.writeFileSync('plugins/test/test_plugin.json', JSON.stringify({_type: "Plugin", "title": random_title() + random_title(), tf: 2, test_flag: [ [{},{qqq: 'iii'}, {x: 2, html: 'test_plugin.html'}]] }) );
+        fs.writeFileSync('plugins/test/test_plugin.json', JSON.stringify({
+            _type: "Plugin", "title": random_title() + random_title(),
+            tf: 2, test_plag: [ [{},{qqq: 'iii'}, {x: 2, html: 'test_plugin.html'}]], test_glag: [ [{},{qqq: 'iii'}, {x: 2, html: 'test_plugin.html'}]]
+        }) );
         fs.writeFileSync('plugins/test/test_plugin.html', pluginFileContent );
+        fs.writeFileSync('plugins/test/test_plugin2.json', JSON.stringify({
+            _type: "Plugin", "title": random_title() + random_title(),
+            tf: 2, test_clag: [ [{}, {}, {x: 3, html: 'test_plugin.html'}]]
+        }) );
         done();
     });
 });
 
 restart_server();
 
-it("should check that test flag is 2 for filter {qqq:iii} and file content was loaded", function(done) {
+it("should check that test flag is 3 for filter {qqq:iii} and file content was loaded", function(done) {
     api_post('/api/plugins/test', [{qqq: 'iii'}], function(err, res) {
         assert.ifError(err);
 
@@ -26,8 +33,26 @@ it("should check that test flag is 2 for filter {qqq:iii} and file content was l
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
-        assert(res.body[1].test_flag.x == 2);
-        assert(res.body[1].test_flag.html == pluginFileContent);
+        assert(res.body[1].test_plag.x == 2);
+        assert(res.body[1].test_clag.x == 3);
+        assert(res.body[1].test_plag.html == pluginFileContent);
+        assert(res.body[1].test_clag.html == pluginFileContent);
+
+        done();
+    })
+});
+
+it("should check that test flag is 2 for filter (null) and file content was loaded", function(done) {
+    api_post('/api/plugins/test', [null], function(err, res) {
+        assert.ifError(err);
+
+        assert(res);
+        assert(res.statusCode == 200);
+        assert(res.body);
+        assert(res.body[0] === null);
+        assert(res.body[1]);
+        assert(res.body[1].test_clag.x == 3);
+        assert(res.body[1].test_clag.html == pluginFileContent);
 
         done();
     })
@@ -36,11 +61,10 @@ it("should check that test flag is 2 for filter {qqq:iii} and file content was l
 it("remove plugin file", function(done) {
     var fs = require('fs');
 
-    fs.unlink('plugins/test/test_plugin.json', function() {
-        fs.unlink('plugins/test/test_plugin.html', function() {
-            done()
-        })
-    });
+    fs.unlinkSync('plugins/test/test_plugin.json');
+    fs.unlinkSync('plugins/test/test_plugin2.json');
+    fs.unlink('plugins/test/test_plugin.html');
+    done()
 });
 
 
