@@ -242,58 +242,63 @@ classes.Auth = {
                     if(found_user) {
 
                         // generate reset password link
-                        var code = utils.encrypt(JSON.stringify({
+                        var params = {
                             date: new Date().getTime() / 1000,
                             r: Math.random().toString().substr(2),
                             email: found_user._id,
                             site: site._id
-                        }));
+                        };
+                        var code = utils.encrypt(JSON.stringify(params));
                         var reset_token = querystring.stringify({code: code});
                         var link = 'http://' + req.headers.host + '/api/auth/reset_password?' + reset_token;
 
+                        collectionUsers.update({_id: found_user._id}, {$set: { last_reset_token: params.r }}, function() {
 
-                        FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: found_user}), function(data) {
+                            FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: found_user}), function(data) {
 
-                            var variables = {
-                                reset_password_link    : link,
-                                reset_token            : code,
-                                reset_token_urlencoded : require("querystring").stringify({t:code}).replace(/^t=/,''),
-                                user                   : found_user,
-                                site                   : site
-                            };
+                                var variables = {
+                                    reset_password_link    : link,
+                                    reset_token            : code,
+                                    reset_token_urlencoded : require("querystring").stringify({t:code}).replace(/^t=/,''),
+                                    user                   : found_user,
+                                    site                   : site
+                                };
 
-                            // setup e-mail data with unicode symbols
-                            var mailOptions = {
-                                from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
-                                to      : found_user._id, // list of receivers
-                                subject : new ngcompile().$interpolate(
-                                    (data && data.reset_password_email && data.reset_password_email.subject)
-                                    || 'Reset password for user {{user._id}}'
-                                )(variables),
-                                html    : new ngcompile().$interpolate(
-                                    (data && data.reset_password_email && data.reset_password_email.html)
-                                    || 'Please activate your account by link:  <a href="{{ reset_password_link }}">{{ reset_password_link }}</a>' // html body
-                                )(variables)
-                            };
+                                // setup e-mail data with unicode symbols
+                                var mailOptions = {
+                                    from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
+                                    to      : found_user._id, // list of receivers
+                                    subject : new ngcompile().$interpolate(
+                                        (data && data.reset_password_email && data.reset_password_email.subject)
+                                        || 'Reset password for user {{user._id}}'
+                                    )(variables),
+                                    html    : new ngcompile().$interpolate(
+                                        (data && data.reset_password_email && data.reset_password_email.html)
+                                        || 'Please activate your account by link:  <a href="{{ reset_password_link }}">{{ reset_password_link }}</a>' // html body
+                                    )(variables)
+                                };
 
-                            var response = {};
+                                var response = {};
 
-                            if(process.env.TEST_ENV == 'DEV_TEST') {
-                                response.reset_token = reset_token;
-                                response.mailOptions = mailOptions;
-                            } else {
-                                // send mail with defined transport object
-                                transporter.sendMail(mailOptions, function(error, info) {
-                                    if(error) {
-                                        return console.log(error);
-                                    }
-                                    console.log('Message sent: ' + info.response);
-                                });
-                            }
+                                if(process.env.TEST_ENV == 'DEV_TEST') {
+                                    response.reset_token = reset_token;
+                                    response.mailOptions = mailOptions;
+                                } else {
+                                    // send mail with defined transport object
+                                    transporter.sendMail(mailOptions, function(error, info) {
+                                        if(error) {
+                                            return console.log(error);
+                                        }
+                                        console.log('Message sent: ' + info.response);
+                                    });
+                                }
 
-                            cb(null, response); // success
+                                cb(null, response); // success
+
+                            });
 
                         });
+
                     } else {
                         res.status(400);
                         cb(['User with _id=' + data[0]._id + ' does not exist'])
@@ -324,11 +329,12 @@ classes.Auth = {
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
 
-                collectionUsers.findOne({_id: managed_user._id}, function(err, user_exists) {
+                collectionUsers.findOne({_id: managed_user._id, last_reset_token: params.r }, function(err, user_exists) {
                     if(user_exists) {
                         for (var i in managed_user) if (managed_user.hasOwnProperty(i) && ['_id'].indexOf(i) < 0 ) {
                             user_exists[i] = managed_user[i];
                         }
+                        delete user_exists.last_reset_token;
                         collectionUsers.updateOne({_id: managed_user._id}, user_exists, function(err, data) {
                             if(err) {
                                 cb(err);
@@ -339,7 +345,7 @@ classes.Auth = {
                         })
                     } else {
                         res.status(400);
-                        cb(['User with _id=' + managed_user._id + ' does not exist'])
+                        cb(['Reset password is unavailable for user with _id=' + managed_user._id])
                     }
                 });
             }));

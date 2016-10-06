@@ -2,8 +2,9 @@
   "name": "mongo-sites-api",
   "version": "0.7.0",
   "description": "",
-  "main": "server.js",
+  "main": "msa-http-layer/server.js",
   "scripts": {
+    "start": "node msa-http-layer/server.js",
     "startdb": "mkdir -p ./tmp/data; mongod --smallfiles --dbpath=./tmp/data",
     "test": "bash -c 'MOCHA_COLORS=true ./node_modules/.bin/mocha -b --sort --full-trace */_tests/*test.js | node tests_add_stack.js; test \"${PIPESTATUS[0]}\" -eq \"0\" && node tests_check.js'"
   },

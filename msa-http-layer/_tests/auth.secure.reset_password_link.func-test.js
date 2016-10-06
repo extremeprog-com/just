@@ -47,7 +47,7 @@ require('../../tests_globals.js').init();
 
                 assert(res);
                 assert.equal(res.statusCode, 400);
-                assert.equal(res.body[0]); //error
+                assert(res.body[0]); //error
 
                 done();
             });
