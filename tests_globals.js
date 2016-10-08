@@ -59,7 +59,7 @@ create_user_for_test = function(email, password, cb) {
     var user = {};
     jar = request.jar();
 
-    api_post('/api/auth/register', [{ _id: email, password: password }], function(err, res) {
+    api_post('/api/auth/register', [{ _id: email, password: password, admin: email == admin.email }], function(err, res) {
         api_post(res.body[1].activation_link, function(err, res) {
 
             api_post('/api/auth', [email, password], function(err, res) {

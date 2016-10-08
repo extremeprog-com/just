@@ -184,5 +184,6 @@ it("should check check that test flag is 1 again", function(done) {
 
         done();
     })
-
 });
+
+initCookie(false);

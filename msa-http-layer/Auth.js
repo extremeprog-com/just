@@ -11,6 +11,8 @@ const ngcompile = require('ng-node-compile');
 
 transporter.use('compile', htmlToText());
 
+Core.registerRequestPoint('Auth_ResetPasswordForbidRq');
+
 classes.Auth = {
     initAuthAPI: function() {
         var
@@ -230,81 +232,94 @@ classes.Auth = {
             }));
 
             app.post('/api/auth/request_reset_password', app.parser(function(site, data, cb, user, res, req) {
-                if( !data[0]._id || !data[0]._id.trim().length ) {
-                    res.status(400);
-                    cb(['This user is not found in the system']);
-                    return;
-                }
 
-                var collectionUsers = app.db.collection('site-' + site._id + '-users');
+                FireRequest(new Auth_ResetPasswordForbidRq({app: app, user: user, data: data, site: site, req: req}),
+                    function(result) {
+                        res.status(400);
+                        cb(result);
+                    },
+                    function() {
+                        make_action();
+                    }
+                );
 
-                collectionUsers.findOne({_id: data[0]._id}, function(err, found_user) {
-                    if(found_user) {
+                function make_action() {
 
-                        // generate reset password link
-                        var params = {
-                            date: new Date().getTime() / 1000,
-                            r: Math.random().toString().substr(2),
-                            email: found_user._id,
-                            site: site._id
-                        };
-                        var code = utils.encrypt(JSON.stringify(params));
-                        var reset_token = querystring.stringify({code: code});
-                        var link = 'http://' + req.headers.host + '/api/auth/reset_password?' + reset_token;
+                    if( !data[0]._id || !data[0]._id.trim().length ) {
+                        res.status(400);
+                        cb(['This user is not found in the system']);
+                        return;
+                    }
 
-                        collectionUsers.update({_id: found_user._id}, {$set: { last_reset_token: params.r }}, function() {
+                    var collectionUsers = app.db.collection('site-' + site._id + '-users');
 
-                            FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: found_user}), function(data) {
+                    collectionUsers.findOne({_id: data[0]._id}, function(err, found_user) {
+                        if(found_user) {
 
-                                var variables = {
-                                    reset_password_link    : link,
-                                    reset_token            : code,
-                                    reset_token_urlencoded : require("querystring").stringify({t:code}).replace(/^t=/,''),
-                                    user                   : found_user,
-                                    site                   : site
-                                };
+                            // generate reset password link
+                            var params = {
+                                date: new Date().getTime() / 1000,
+                                r: Math.random().toString().substr(2),
+                                email: found_user._id,
+                                site: site._id
+                            };
+                            var code = utils.encrypt(JSON.stringify(params));
+                            var reset_token = querystring.stringify({code: code});
+                            var link = 'http://' + req.headers.host + '/api/auth/reset_password?' + reset_token;
 
-                                // setup e-mail data with unicode symbols
-                                var mailOptions = {
-                                    from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
-                                    to      : found_user._id, // list of receivers
-                                    subject : new ngcompile().$interpolate(
-                                        (data && data.reset_password_email && data.reset_password_email.subject)
-                                        || 'Reset password for user {{user._id}}'
-                                    )(variables),
-                                    html    : new ngcompile().$interpolate(
-                                        (data && data.reset_password_email && data.reset_password_email.html)
-                                        || 'Please activate your account by link:  <a href="{{ reset_password_link }}">{{ reset_password_link }}</a>' // html body
-                                    )(variables)
-                                };
+                            collectionUsers.update({_id: found_user._id}, {$set: { last_reset_token: params.r }}, function() {
 
-                                var response = {};
+                                FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: found_user}), function(data) {
 
-                                if(process.env.TEST_ENV == 'DEV_TEST') {
-                                    response.reset_token = reset_token;
-                                    response.mailOptions = mailOptions;
-                                } else {
-                                    // send mail with defined transport object
-                                    transporter.sendMail(mailOptions, function(error, info) {
-                                        if(error) {
-                                            return console.log(error);
-                                        }
-                                        console.log('Message sent: ' + info.response);
-                                    });
-                                }
+                                    var variables = {
+                                        reset_password_link    : link,
+                                        reset_token            : code,
+                                        reset_token_urlencoded : require("querystring").stringify({t:code}).replace(/^t=/,''),
+                                        user                   : found_user,
+                                        site                   : site
+                                    };
 
-                                cb(null, response); // success
+                                    // setup e-mail data with unicode symbols
+                                    var mailOptions = {
+                                        from    : process.env.EMAIL_FROM || 'noreply@' + (site.names && site.names[0] || site._id), // sender address
+                                        to      : found_user._id, // list of receivers
+                                        subject : new ngcompile().$interpolate(
+                                            (data && data.reset_password_email && data.reset_password_email.subject)
+                                            || 'Reset password for user {{user._id}}'
+                                        )(variables),
+                                        html    : new ngcompile().$interpolate(
+                                            (data && data.reset_password_email && data.reset_password_email.html)
+                                            || 'Please activate your account by link:  <a href="{{ reset_password_link }}">{{ reset_password_link }}</a>' // html body
+                                        )(variables)
+                                    };
+
+                                    var response = {};
+
+                                    if(process.env.TEST_ENV == 'DEV_TEST') {
+                                        response.reset_token = reset_token;
+                                        response.mailOptions = mailOptions;
+                                    } else {
+                                        // send mail with defined transport object
+                                        transporter.sendMail(mailOptions, function(error, info) {
+                                            if(error) {
+                                                return console.log(error);
+                                            }
+                                            console.log('Message sent: ' + info.response);
+                                        });
+                                    }
+
+                                    cb(null, response); // success
+
+                                });
 
                             });
 
-                        });
-
-                    } else {
-                        res.status(400);
-                        cb(['User with _id=' + data[0]._id + ' does not exist'])
-                    }
-                });
-
+                        } else {
+                            res.status(400);
+                            cb(['User with _id=' + data[0]._id + ' does not exist'])
+                        }
+                    });
+                }
             }));
 
             app.post('/api/auth/reset_password', app.parser(function(site, data, cb, user, res, req) {
@@ -464,5 +479,5 @@ classes.Auth = {
 
             success();
         }
-    }  
+    }
 };

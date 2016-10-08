@@ -49,9 +49,19 @@ var mongoApiFile;
 var sitesCollection;
 
 classes = {};
+
+
 require('./Auth.js');
 require('./Plugin.js');
 require('./Snapshots.js');
+
+var glob = require("glob");
+glob.sync('plugins/**/*.js', {ignore: ['**/node_modules/**', '**/bower_components/**', '**/_tests/**', __filename ]})
+    .map(function(file) {
+        if(fs.readFileSync(file).toString().match(/require\(['"]core-os['"]\)/)) {
+            require('../' + file);
+        }
+    });
 
 var mongoHost = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/mongo-sites';
 mongoClient.connect(mongoHost, function (err, dblink) {

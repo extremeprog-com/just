@@ -40,10 +40,16 @@ mongoClient.connect(mongoHost, function (err, db) {
         		function() {
         			console.log('Collection _sites created. Site ' + params.options['site-name'] + ' added.');
 
-        			db.createCollection('site-' + params.options['site-name'] + '-users', function(err, collection) {
-						console.log('Collection site-' + params.options['site-name'] + '-users created');
-						db.close();
-					});		
+        			db.createCollection('site-' + params.options['site-name'], function(err, collection) {
+						console.log('Collection site-' + params.options['site-name'] + ' created');
+                        db.createCollection('site-' + params.options['site-name'] + '-users', function(err, collection) {
+                            console.log('Collection site-' + params.options['site-name'] + '-users created');
+                            db.createCollection('site-' + params.options['site-name'] + '-plugins', function(err, collection) {
+                                console.log('Collection site-' + params.options['site-name'] + '-plugins created');
+                                db.close();
+                            });
+                        });
+					});
         		}
         	);
         });

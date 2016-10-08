@@ -145,7 +145,7 @@ classes.Snapshots = {
                     }
                 })(data[0]);
 
-                mongodb.Collection.prototype.find.apply(snapshots, data).sort({_modified: -1}).limit(limit).toArray(function (err, result) {
+                mongodb.Collection.prototype.find.apply(snapshots, data).sort({_id: -1}).limit(limit).toArray(function (err, result) {
                     cb(err, result.map(function (it) {
                         it._snapshot_id = it._id;
                         it._id = it._oid;
