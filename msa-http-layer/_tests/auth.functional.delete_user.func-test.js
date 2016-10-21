@@ -58,7 +58,7 @@ require('../../tests_globals.js').init();
 
       done();
     });
-  })
+  });
 
   it("should return success on deleting new user", function(done) {
     api_post('/api/auth/delete', [[test_data.email]], function (err, res) {
@@ -71,7 +71,7 @@ require('../../tests_globals.js').init();
       done();
     });
 
-  })
+  });
 
   it("should return error when trying to login with removed user", function(done) {
     api_post('/api/auth', [test_data.email, test_data.password], function (err, res) {

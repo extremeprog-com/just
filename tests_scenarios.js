@@ -79,8 +79,8 @@ module.exports = {
                     "get mail options suited to plugin on request to reset password"
                 ],
                 "programmer should be able to customise register email": [
-                    "func msa-http-layer/_tests/auth.configurable.register_email: add plugin with register email template, " +
-                    "get mail options suited to plugin on register"
+                    "func msa-http-layer/_tests/auth.configurable.register_email: add plugin with register email template, "
+                        + "get mail options suited to plugin on register"
                 ]
             }
         },
@@ -89,14 +89,17 @@ module.exports = {
             "Attribute: Functional": {
                 "admin user should be able to manage plugins": [
                     "func msa-http-layer/_tests/plugins.functional.manage_plugins: add plugin, return plugin list with newly added plugin"
-                    + "save plugin with other parameter, check that plugin updated, delete plugin, return plugin list without newly added plugin",
+                        + "save plugin with other parameter, check that plugin updated, delete plugin, return plugin list without newly added plugin",
                     "func msa-http-layer/_tests/plugins.functional.test_plugin_flag: add plugin that change test flag to 1, check that test flag is 1, "
-                    + "add plugin that change test flag to 0, check that test flag is 1, change last plugin order to 0, check check that test flag is 1 again"
+                        + "add plugin that change test flag to 0, check that test flag is 1, change last plugin order to 0, check check that test flag is 1 again"
                 ]
             },
             "Attribute: Secure": {
                 "common user should not be able to manage plugins": [
-                    "func msa-http-layer/_tests/plugins.secure.test_plugin: add should not work, save should not work, get should not work"
+                    "func msa-http-layer/_tests/plugins.secure.plugin_manage_common_user: return error on add plugin, return error on save plugin, return error on get plugin, return error on delete plugin"
+                ],
+                "unauthorized requests should be denied": [
+                    "unit msa-http-layer/_tests/plugins.secure.plugin_unauthorized: return error on get, return error on save, return error on delete"
                 ]
             }
         },
@@ -105,7 +108,9 @@ module.exports = {
             "Attribute: Functional": {
                 "save function should work correctly": [
                     "func msa-http-layer/_tests/snapshots.functional.save_with_snapshot: save object, update object, get snapshot and check fields",
-                    "func msa-http-layer/_tests/snapshots.functional.save_with_excluded_fields: save object with excluded fields, get snapshot without excluded fields"
+                    "func msa-http-layer/_tests/snapshots.functional.save_with_excluded_fields: save object with excluded fields, get snapshot without excluded fields",
+                    "unit msa-http-layer/_tests/snapshots.functional.get_snapshots: prepare: save object, prepare: update object several times, "
+                        + "get snapshots, get snapshots with additional params"
                 ]
             },
             "Attribute: Foolproof": {
