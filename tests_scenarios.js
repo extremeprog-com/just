@@ -71,6 +71,9 @@ module.exports = {
                 ],
                 "user should not be able to use the same link several times to reset password": [
                     "func msa-http-layer/_tests/auth.secure.reset_password_link: request reset password, reset password, return error on reset password with already used link"
+                ],
+                "user could not register with admin rights": [
+                    "func msa-http-layer/_tests/auth.secure.register_user_admin: return error on trying register with admin rights"
                 ]
             },
             "Attribute: Configurable": {
