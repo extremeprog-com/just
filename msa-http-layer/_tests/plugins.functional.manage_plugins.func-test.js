@@ -112,3 +112,5 @@ it("should return plugin list without newly added plugin", function(done) {
         done();
     })
 });
+
+initCookie(false);
