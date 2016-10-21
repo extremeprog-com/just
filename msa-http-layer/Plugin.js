@@ -19,7 +19,7 @@ classes.Plugin = {
             app.post('/api/plugins/save', app.parser(function (site, data, cb, user, res, req) {
 
                 if (!user) {
-                    res.status(401);
+                    res.status(403);
                     cb(['Authorization required']);
                     return;
                 }
@@ -33,41 +33,73 @@ classes.Plugin = {
 
                 var update_filter = data._id ? {_id: data._id} : {};
 
-                if(!data._id) {
-                    app.db.collection('site-' + site._id + '-plugins').insert(data, function(err, insertedObj) {
-                        if(err) {
-                            res.status(400);
-                            cb([err]);
-                            return;
-                        }
+                FireRequest(new PluginUtilizer_MatchObjectRq({
+                    site: site,
+                    user: user,
+                    obj : data
+                }), function(restrictions_new) {
 
-                        FireRequest(new Plugin_UpdateLocalRq({app: app}), function() {
-                            cb(null, insertedObj.ops[0]);
-                            FireEvent(new Plugin_ListChanged);
+                    console.log('ne', restrictions_new, user, _this.site2plugins);
+
+                    if (!restrictions_new.write_plugin) {
+                        res.status(403);
+                        cb('Update plugin denied.');
+                        return;
+                    }
+
+                    if (!data._id) {
+                        app.db.collection('site-' + site._id + '-plugins').insert(data, function (err, insertedObj) {
+                            if (err) {
+                                res.status(403);
+                                cb([err]);
+                                return;
+                            }
+
+                            FireRequest(new Plugin_UpdateLocalRq({app: app}), function () {
+                                cb(null, insertedObj.ops[0]);
+                                FireEvent(new Plugin_ListChanged);
+                            });
+                        })
+                    } else {
+                        app.db.collection('site-' + site._id + '-plugins').findOne({_id: data._id}, function (err, old) {
+                            FireRequest(new PluginUtilizer_MatchObjectRq({
+                                site: site,
+                                user: user,
+                                obj : old
+                            }), function (restrictions_existing) {
+
+                                console.log('ex', restrictions_existing);
+
+                                if (!restrictions_existing.write_plugin) {
+                                    res.status(403);
+                                    cb('Update plugin denied.');
+                                    return;
+                                }
+
+                                app.db.collection('site-' + site._id + '-plugins').update({_id: data._id}, data, {upsert: true}, function (err, updatedDocs) {
+
+                                    if (err) {
+                                        res.status(400);
+                                        cb([err]);
+                                        return;
+                                    }
+
+                                    FireRequest(new Plugin_UpdateLocalRq({app: app}), function () {
+                                        cb(null, data); // todo?
+                                        FireEvent(new Plugin_ListChanged);
+                                    });
+
+                                });
+                            });
                         });
-                    })
-                } else {
-                    app.db.collection('site-' + site._id + '-plugins').update({_id: data._id}, data, {upsert: true}, function(err, updatedDocs) {
-
-                        if(err) {
-                            res.status(400);
-                            cb([err]);
-                            return;
-                        }
-
-                        FireRequest(new Plugin_UpdateLocalRq({app: app}), function() {
-                            cb(null, data); // todo?
-                            FireEvent(new Plugin_ListChanged);
-                        });
-
-                    })
-                }
+                    }
+                })
             }));
 
             app.post('/api/plugins/get', app.parser(function (site, data, cb, user, res, req) {
 
-                    if (!user) {
-                        res.status(401);
+                    if (!user || !user.admin) {
+                        res.status(403);
                         cb(['Authorization required']);
                         return;
                     }
@@ -78,8 +110,8 @@ classes.Plugin = {
 
             app.post('/api/plugins/delete', app.parser(function (site, data, cb, user, res, req) {
 
-                    if (!user) {
-                        res.status(401);
+                    if (!user || !user.admin) {
+                        res.status(403);
                         cb(['Authorization required']);
                         return;
                     }
@@ -103,7 +135,7 @@ classes.Plugin = {
                 app.post('/api/plugins/test', app.parser(function (site, data, cb, user, res, req) {
 
                     if (!user) {
-                        res.status(401);
+                        res.status(403);
                         cb(['Authorization required']);
                         return;
                     }
@@ -166,6 +198,7 @@ classes.Plugin = {
                 Object.keys(plugin).map(function(name) {
                     if(plugin[name] instanceof Array) {
                         plugin[name].map(function(rule) {
+                            //console.log(rule, user, obj);
                             if(object_match(user, rule[0]) && object_match(obj, rule[1])) {
                                 name2rule[name] = merge(name2rule[name], rule[2]);
                             }
@@ -173,6 +206,7 @@ classes.Plugin = {
                     }
                 })
             });
+
             success(name2rule);
         }
     },
@@ -237,15 +271,21 @@ classes.Plugin = {
             var pending = 0;
             app.db.listCollections().toArray(function(err, data) {
                 data.map(function(it) {
+                    console.log(it);
                     var matches;
-                    if(matches = it.name.match(/^site-(.*)-plugins$/)) {
+                    if(matches = it.name.match(/^site-(.*)$/)) {
+                        if(it.name.match(/-(plugins|users)$/)) {
+                            return
+                        }
+
                         pending++;
-                        app.db.collection(it.name).find({}, {sort: {_order: 1}}).toArray(function(err, docs) {
+                        app.db.collection(it.name + '-plugins').find({}, {sort: {_order: 1}}).toArray(function(err, docs) {
+                            console.log(err, docs);
                             if(err) {
                                 fail();
                                 return;
                             }
-                            _this.site2plugins[matches[1]] = (_this.site2plugins[matches[1]] || []).concat(docs);
+                            _this.site2plugins[matches[1]] = [].concat(_this.site2plugins[matches[1]] || []).concat(_this.site2plugins._default || []).concat(docs);
                             pending--;
                             if(!pending) {
                                 success();

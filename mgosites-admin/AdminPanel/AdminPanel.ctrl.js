@@ -162,6 +162,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
                     }
                 });
                 $scope.allowedObjects = allowedObjects;
+                $scope.pluginsReady = true;
                 console.log($scope.allowedObjects);
                 $scope.$$phase || $scope.$apply();
                 (plugin.objectRestrictions  || []).map(function(restriction) {

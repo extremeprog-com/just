@@ -17,7 +17,7 @@ it("should return error on add plugin", function(done) {
             assert.ifError(err);
 
             assert(res);
-            assert(res.statusCode == 401);
+            assert(res.statusCode == 403);
 
             assert(res.body);
             assert(res.body[0]);
@@ -32,7 +32,7 @@ it("should return error on get plugin", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 401);
+        assert(res.statusCode == 403);
 
         assert(res.body);
         assert(res.body[0]);
@@ -46,7 +46,7 @@ it("should return error on delete plugin", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 401);
+        assert(res.statusCode == 403);
 
         assert(res.body);
         assert(res.body[0]);
