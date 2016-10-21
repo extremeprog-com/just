@@ -7,13 +7,18 @@ var params = opt.create([
   ['h' , 'help'                , 'output usage information'],
   [''  , 'site-name=<arg>'     , 'specify site name'],
   [''  , 'default-admin=<arg>' , 'specify default admin email'],
-  [''  , 'domain-name=<arg>+'  , 'specidy domain name'],
-  [''  , 'free-register=<arg>' , 'specidy free register option for users (true|false)']
+  [''  , 'domain-name=<arg>+'  , 'specify domain name'],
+  [''  , 'free-register=<arg>' , 'specify free register option for users (true|false)']
 ])     
 .bindHelp() 
 .parseSystem();
 
-var free_register = params.options['free-register'] ? (params.options['free-register'] === 'true' ? true : false) : true;
+if(!params.options['site-name']) {
+    console.log('Failed to prepare site. Please specify a site name.');
+    return;
+}
+
+var free_register = params.options['free-register'] ? (params.options['free-register'] === 'true') : true;
 var site_to_update = {"_id": params.options['site-name']};
 
 if(params.options['free-register']) site_to_update['free_register'] = free_register;
@@ -30,7 +35,7 @@ mongoClient.connect(mongoHost, function (err, db) {
             process.exit();
         }, 5000);
     } else {
-        console.log('Connected to mongodb');
+        console.log('Connected to mongodb.');
 
         db.createCollection('_sites', function(err, collection) {
         	collection.update(
@@ -38,14 +43,21 @@ mongoClient.connect(mongoHost, function (err, db) {
         		site_to_update,
         		{upsert: true},
         		function() {
-        			console.log('Collection _sites created. Site ' + params.options['site-name'] + ' added.');
+                    if(!err) console.log('Collection _sites created. Site ' + params.options['site-name'] + ' added.');
+                    else console.log('Failed to create _sites collection.', err);
 
         			db.createCollection('site-' + params.options['site-name'], function(err, collection) {
-						console.log('Collection site-' + params.options['site-name'] + ' created');
+						if(!err) console.log('Collection site-' + params.options['site-name'] + ' created.');
+                        else console.log('Failed to create site-' + params.options['site-name'] + 'collection.', err);
+
                         db.createCollection('site-' + params.options['site-name'] + '-users', function(err, collection) {
-                            console.log('Collection site-' + params.options['site-name'] + '-users created');
+                            if(!err) console.log('Collection site-' + params.options['site-name'] + '-users created.');
+                            else console.log('Failed to create site-' + params.options['site-name'] + '-users collection.', err);
+
                             db.createCollection('site-' + params.options['site-name'] + '-plugins', function(err, collection) {
-                                console.log('Collection site-' + params.options['site-name'] + '-plugins created');
+                                if(!err) console.log('Collection site-' + params.options['site-name'] + '-plugins created.');
+                                else console.log('Failed to create site-' + params.options['site-name'] + '-plugins collection.', err);
+
                                 db.close();
                             });
                         });
