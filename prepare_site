@@ -18,6 +18,13 @@ if(!params.options['site-name']) {
     return;
 }
 
+var crypto_key = '', hash_key = '';
+
+for(var i = 0; i < 5; i++) {
+    crypto_key += Math.random().toString(32).substr(2);
+    hash_key   += Math.random().toString(32).substr(2);
+}
+
 var free_register = params.options['free-register'] ? (params.options['free-register'] === 'true') : true;
 var site_to_update = {"_id": params.options['site-name']};
 
@@ -38,32 +45,38 @@ mongoClient.connect(mongoHost, function (err, db) {
         console.log('Connected to mongodb.');
 
         db.createCollection('_sites', function(err, collection) {
-        	collection.update(
-        		{"_id": params.options['site-name']}, 
-        		site_to_update,
-        		{upsert: true},
-        		function() {
-                    if(!err) console.log('Collection _sites created. Site ' + params.options['site-name'] + ' added.');
-                    else console.log('Failed to create _sites collection.', err);
 
-        			db.createCollection('site-' + params.options['site-name'], function(err, collection) {
-						if(!err) console.log('Collection site-' + params.options['site-name'] + ' created.');
-                        else console.log('Failed to create site-' + params.options['site-name'] + 'collection.', err);
+            collection.find({"_id": params.options['site-name']}).toArray(function (err, sites) {
+                site_to_update.hash_key   = sites[0] ? sites[0].hash_key   || hash_key   : hash_key;
+                site_to_update.crypto_key = sites[0] ? sites[0].crypto_key || crypto_key : crypto_key;
 
-                        db.createCollection('site-' + params.options['site-name'] + '-users', function(err, collection) {
-                            if(!err) console.log('Collection site-' + params.options['site-name'] + '-users created.');
-                            else console.log('Failed to create site-' + params.options['site-name'] + '-users collection.', err);
+                collection.update(
+                    {"_id": params.options['site-name']},
+                    site_to_update,
+                    {upsert: true},
+                    function() {
+                        if(!err) console.log('Collection _sites created. Site ' + params.options['site-name'] + ' added.');
+                        else console.log('Failed to create _sites collection.', err);
 
-                            db.createCollection('site-' + params.options['site-name'] + '-plugins', function(err, collection) {
-                                if(!err) console.log('Collection site-' + params.options['site-name'] + '-plugins created.');
-                                else console.log('Failed to create site-' + params.options['site-name'] + '-plugins collection.', err);
+                        db.createCollection('site-' + params.options['site-name'], function(err, collection) {
+                            if(!err) console.log('Collection site-' + params.options['site-name'] + ' created.');
+                            else console.log('Failed to create site-' + params.options['site-name'] + 'collection.', err);
 
-                                db.close();
+                            db.createCollection('site-' + params.options['site-name'] + '-users', function(err, collection) {
+                                if(!err) console.log('Collection site-' + params.options['site-name'] + '-users created.');
+                                else console.log('Failed to create site-' + params.options['site-name'] + '-users collection.', err);
+
+                                db.createCollection('site-' + params.options['site-name'] + '-plugins', function(err, collection) {
+                                    if(!err) console.log('Collection site-' + params.options['site-name'] + '-plugins created.');
+                                    else console.log('Failed to create site-' + params.options['site-name'] + '-plugins collection.', err);
+
+                                    db.close();
+                                });
                             });
                         });
-					});
-        		}
-        	);
+                    }
+                );
+            });
         });
     }
 });
