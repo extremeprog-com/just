@@ -18,7 +18,7 @@ it("should return error on add plugin", function(done) {
             assert.ifError(err);
 
             assert(res);
-            assert(res.statusCode == 403);
+            assert.equal(res.statusCode, 403);
 
             assert(res.body);
             assert(res.body[0]);
@@ -33,7 +33,7 @@ it("should return error on get plugin", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 403);
+        assert.equal(res.statusCode, 403);
 
         assert(res.body);
         assert(res.body[0]);
@@ -51,7 +51,7 @@ it("should return plugin list with newly added plugin for admin", function(done)
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
 
         assert(res.body);
         assert(res.body[0] === null);
@@ -70,7 +70,7 @@ it("should return error on save plugin", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 403);
+        assert.equal(res.statusCode, 403);
 
         assert(res.body);
         assert(res.body[0]);
@@ -84,7 +84,7 @@ it("should return error on delete plugin", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 403);
+        assert.equal(res.statusCode, 403);
 
         assert(res.body);
         assert(res.body[0]);
@@ -100,7 +100,7 @@ it("should check for plugin has not been deleted", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
 
         assert(res.body);
         assert(res.body[0] === null);

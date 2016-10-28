@@ -18,6 +18,8 @@ classes.Plugin = {
         return function (success, fail) {
             app.post('/api/plugins/save', app.parser(function (site, data, cb, user, res, req) {
 
+                console.log(user);
+
                 if (!user) {
                     res.status(403);
                     cb(['Authorization required']);
@@ -39,11 +41,10 @@ classes.Plugin = {
                     obj : data
                 }), function(restrictions_new) {
 
-                    console.log('ne', restrictions_new, user, _this.site2plugins);
-
                     if (!restrictions_new.write_plugin) {
                         res.status(403);
                         cb('Update plugin denied.');
+                        process.env.TEST_ENV == 'DEV_TEST' && console.error('Update plugin denied.', new Error().stack);
                         return;
                     }
 
@@ -73,6 +74,7 @@ classes.Plugin = {
                                 if (!restrictions_existing.write_plugin) {
                                     res.status(403);
                                     cb('Update plugin denied.');
+                                    process.env.TEST_ENV == 'DEV_TEST' && console.error('Update plugin denied.', new Error().stack);
                                     return;
                                 }
 

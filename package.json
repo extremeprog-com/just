@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node msa-http-layer/server.js",
     "startdb": "mkdir -p ./tmp/data; mongod --smallfiles --dbpath=./tmp/data",
-    "test": "bash -c 'MOCHA_COLORS=true ./node_modules/.bin/mocha -b --sort --full-trace */_tests/*test.js | node tests_add_stack.js; test \"${PIPESTATUS[0]}\" -eq \"0\" && node tests_check.js'"
+    "test": "bash -c 'MOCHA_COLORS=true ./node_modules/.bin/mocha -b --full-trace */_tests/*.functional.*test.js */_tests/*.configurable.*test.js */_tests/*.secure.*test.js */_tests/*.foolproof.*test.js | node tests_add_stack.js; test \"${PIPESTATUS[0]}\" -eq \"0\" && node tests_check.js'"
   },
   "dependencies": {
     "add-stream": "1.0.0",

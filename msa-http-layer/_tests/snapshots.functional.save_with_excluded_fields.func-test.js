@@ -24,7 +24,7 @@ it("should save object with excluded fields", function(done) {
             assert.ifError(err);
 
             assert(res);
-            assert(res.statusCode == 200);
+            assert.equal(res.statusCode, 200);
 
             assert(res.body);
             assert(res.body[0] === null);
@@ -59,7 +59,7 @@ it("should save again object with excluded fields", function(done) {
             assert.ifError(err);
 
             assert(res);
-            assert(res.statusCode == 200);
+            assert.equal(res.statusCode, 200);
 
             assert(res.body);
             assert(res.body[0] === null);
@@ -79,7 +79,7 @@ it("should get snapshot without excluded fields", function(done) {
             assert.ifError(err);
 
             assert(res);
-            assert(res.statusCode == 200);
+            assert.equal(res.statusCode, 200);
 
             assert(res.body);
             assert(res.body[0] === null);

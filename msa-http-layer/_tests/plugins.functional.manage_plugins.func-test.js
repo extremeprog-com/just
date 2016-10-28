@@ -1,11 +1,11 @@
 require('../../tests_globals.js').init();
 
-initCookie(admin);
-
 var plugin_name = random_title();
 var plugin_id;
 
 var GeneratedPlugin;
+
+initCookie(admin);
 
 it("should add plugin", function(done) {
     api_post('/api/plugins/save',
@@ -22,7 +22,7 @@ it("should add plugin", function(done) {
             assert.ifError(err);
 
             assert(res);
-            assert(res.statusCode == 200);
+            assert.equal(res.statusCode, 200);
             assert(res.body);
             assert(res.body[0] === null);
             assert(GeneratedPlugin = res.body[1]);
@@ -39,7 +39,7 @@ it("should return plugin list with newly added plugin", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -56,7 +56,7 @@ it("save plugin with other parameter", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -72,7 +72,7 @@ it("check that plugin updated", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -89,7 +89,7 @@ it("should delete plugin", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -103,7 +103,7 @@ it("should return plugin list without newly added plugin", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);

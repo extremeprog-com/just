@@ -11,13 +11,14 @@ if (require.main === module) {
     console.log('required as a module');
 }
 
-require('./../config.js');
 require('core-os');
 
 /** @name MSAServer_Init */
 /** @name MSAServer_Init_Success */
 /** @name MSAServer_Init_Fail */
 Core.registerRequestPoint('MSAServer_Init', {type: 'multi'});
+
+const utils       = require("./Utils.js");
 
 var express = require('express');
 var busboy = require('connect-busboy');
@@ -203,9 +204,20 @@ function parser(data_handle, custom_handle) {
 
                         var auth_data, user;
 
+                        var token = req.query.token || req.cookies[site._id + ':_auth'];
+
+                        if(!token) {
+                            if (data_handle) {
+                                handleRequest();
+                            } else {
+                                custom_handle(req, res, site);
+                            }
+                            return;
+                        }
+
                         try {
-                            var token = req.query.token || req.cookies[site._id + ':_auth'];
-                            auth_data = JSON.parse(decrypt(token));
+
+                            auth_data = JSON.parse(utils.decrypt(site.crypto_key, token));
 
                             db.collection('site-' + site._id + '-users').find({
                                 _id: auth_data.user,
@@ -213,13 +225,17 @@ function parser(data_handle, custom_handle) {
                             }).toArray(function (err, users) {
                                 if(err) {
                                     res.send(['unknown, database error. contact administrator.']);
-                                    console.error(err);
+                                    console.error(err, new Error().stack);
                                     return
                                 }
                                 if (!users.length) {
                                     auth_data = null
                                 } else {
                                     user = users[0]
+                                }
+
+                                if(user && (user._id == site.default_admin || user._id == process.env.DEFAULT_ADMIN)) {
+                                    user.admin = true
                                 }
                                 if (data_handle) {
                                     handleRequest();
@@ -229,6 +245,7 @@ function parser(data_handle, custom_handle) {
                             })
 
                         } catch (e) {
+                            console.error(e, e.stack);
                             if (data_handle) {
                                 handleRequest();
                             } else {
@@ -371,15 +388,6 @@ app.post('/api/_mapReduce', parser(function (site, data, cb, user) {
     db.collection('site-' + site._id)
         .mapReduce(data[0], data[1], data[2], cb);
 }));
-
-var
-    algorithm = 'aes192',
-    password = 'd6F3Ef9efwh3n90s03eq';
-
-function decrypt(buffer) {
-    var decipher = crypto.createDecipher(algorithm, password);
-    return decipher.update(new Buffer(buffer, 'base64')) + decipher.final();
-}
 
 app.post('/api/graph_search', parser(function (site, data, cb) {
 

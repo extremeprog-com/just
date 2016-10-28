@@ -29,7 +29,7 @@ it("should check that test flag is 3 for filter {qqq:iii} and file content was l
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -47,7 +47,7 @@ it("should check that test flag is 2 for filter (null) and file content was load
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -73,7 +73,7 @@ it("should add plugin with object filter {qqq:eee} that change test flag to 1", 
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(Plugin1 = res.body[1]);
@@ -87,7 +87,7 @@ it("should check that test flag is 1 for filter {qqq:eee}", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -102,7 +102,7 @@ it("should check that test flag is 1 for filter {}", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -117,7 +117,7 @@ it("should check that test flag is undefined for filter {qqq:ppp}", function(don
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -132,7 +132,7 @@ it("should add plugin that change test flag to 0", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(Plugin2 = res.body[1]);
@@ -146,7 +146,7 @@ it("should check that test flag is 0", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
@@ -162,7 +162,7 @@ it("should change last plugin order to 0", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] == null );
         assert(Plugin2 = res.body[1]);
@@ -176,7 +176,7 @@ it("should check check that test flag is 1 again", function(done) {
         assert.ifError(err);
 
         assert(res);
-        assert(res.statusCode == 200);
+        assert.equal(res.statusCode, 200);
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
