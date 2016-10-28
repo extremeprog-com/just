@@ -76,6 +76,12 @@ classes.Auth = {
                     return;
                 }
 
+                if ( data[0].admin && !user.admin ) {
+                    res.status(403);
+                    cb(['Cannot register user with admin rights']);
+                    return;
+                }
+
                 var re_email = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
                 if( !re_email.test(data[0]._id) ) {
