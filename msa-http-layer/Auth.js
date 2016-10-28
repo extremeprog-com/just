@@ -205,6 +205,7 @@ classes.Auth = {
             app.post('/api/auth/users', app.parser(function (site, data, cb, user, res) {
 
                 if (!user) {
+                    res.status(403);
                     cb('Authorization required');
                     return;
                 }

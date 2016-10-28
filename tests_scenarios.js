@@ -55,6 +55,10 @@ module.exports = {
                 "user should be able to change password": [
                     "func msa-http-layer/_tests/auth.functional.change_password: login with an existing user, change password, logout, " +
                     "return error on trying to login with old password, return success on trying to login with new password"
+                ],
+                "user should be able to retrieve other users": [
+                    "func msa-http-layer/_tests/auth.functional.get_users: login with an admin user, get users, " +
+                    "get particular user"
                 ]
             },
             "Attribute: Secure": {
