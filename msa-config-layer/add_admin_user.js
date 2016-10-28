@@ -1,22 +1,10 @@
 #!/usr/bin/env node
 
-const prompt  = require('prompt');
+const prompt = require('prompt');
 const mongodb = require('mongodb');
-
-//var params = opt.create([
-//    ['h', 'help'                , 'output usage information'],
-//    ['' , 'show'                , 'show all sites that already exist'],
-//    ['' , 'site-name=<arg>'     , 'specify site name'],
-//    ['' , 'default-admin=<arg>' , 'specify default admin email'],
-//    ['' , 'domain-name=<arg>+'  , 'specify domain name'],
-//    ['' , 'free-register=<arg>' , 'specify free register option for users (true|false)']
-//])
-//    .bindHelp()
-//    .parseSystem();
-
+const crypto = require('crypto');
 
 prompt.message = "";
-
 
 var properties = [
     {
@@ -51,7 +39,7 @@ prompt.get(properties, function (err, result) {
     }
 
     var mongoClient = mongodb.MongoClient;
-    var mongoHost   = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/mongo-sites';
+    var mongoHost = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/mongo-sites';
 
     mongoClient.connect(mongoHost, function (err, db) {
         if (err) {
@@ -63,35 +51,37 @@ prompt.get(properties, function (err, result) {
             console.log('Connected to mongodb.');
 
             db.collection('_sites').find({_id: result.site_name}).toArray(function (err, site) {
-                if(!site) console.error('No site with ' + site + ' name was found.');
-                else db.createCollection('site-' + result.site_name + '-users', function (err, collection) {
-
-                    collection.find({_id: result.username}).toArray(function (err, user) {
-
-                        var new_user = { _id: result.email };
-
-                        var hash = new crypto.Hash('MD5');
-                        hash.update(data[0]._id + data[0].password + secret);
-                        new_user._originated  = parseInt(new Date() / 1000);
-                        new_user.passwordHash = hash.digest('base64');
-
-                        if(!user) {
-                            collection.insert(new_user, function(err, data) {
-                                if(err) {
-                                    cb(err);
-                                }
-                            })
-                        }
+                    if (!site.length) {
+                        console.error('No site with ' + result.site_name + ' name was found.');
                         db.close();
-                    });
+                    } else
+                        db
+                            .collection('site-' + result.site_name + '-users')
+                            .find({_id: result.email}).toArray(function (err, user) {
+                                if (!user.length) {
+                                    var new_user = {_id: result.email};
 
-                });
-            });
+                                    var hash = new crypto.Hash('MD5');
+                                    hash.update(new_user._id + result.password + site[0].hash_key);
+
+                                    new_user._originated = parseInt(new Date() / 1000);
+                                    new_user.passwordHash = hash.digest('base64');
+                                    new_user.admin = true;
+                                    new_user.active = 1;
+
+                                    db.collection('site-' + result.site_name + '-users').insert(new_user, function (err, data) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                        console.log('New admin user ' + result.email +  ' was added to site ' + result.site_name + ".");
+                                    })
+                                } else {
+                                    console.log("User with " + result.email + ' already exists.')
+                                }
+                                db.close();
+                            });
+                }
+            );
         }
     });
-
 });
-
-function onErr(err) {
-
-}
