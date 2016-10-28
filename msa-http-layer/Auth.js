@@ -65,6 +65,7 @@ classes.Auth = {
             app.post('/api/auth/register', app.parser(function (site, data, cb, user, res, req) {
 
                 if (!site.free_register && !user) {
+                    res.status(403);
                     cb(['Authorization required']);
                     return;
                 }
