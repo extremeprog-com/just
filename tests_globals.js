@@ -45,7 +45,7 @@ mongo_url = 'mongodb://localhost:27017/mongo-sites';
 user  = {};
 admin = {};
 
-admin.email     = random_email();
+admin.email     = 'adm-' + random_email();
 admin.password  = random_password();
 
 user.email      = random_email();
@@ -59,7 +59,7 @@ create_user_for_test = function(email, password, cb) {
     var user = {};
     jar = request.jar();
 
-    api_post('/api/auth/register', [{ _id: email, password: password, admin: email == admin.email }], function(err, res) {
+    api_post('/api/auth/register', [{ _id: email, password: password}], function(err, res) {
         api_post(res.body[1].activation_link, function(err, res) {
 
             api_post('/api/auth', [email, password], function(err, res) {
@@ -147,7 +147,7 @@ restart_server = function() {
 start_server = function(cb) {
     //log_resource('trying to start', 'server');
     server_process = require('child_process').spawn(
-        'node', ['msa-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, ADMIN_USER: admin.email, MONGO_URL: mongo_url } }
+        'node', ['msa-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, DEFAULT_ADMIN: admin.email, MONGO_URL: mongo_url } }
     );
     server_process.stdout.on('data', function(chunk) {
         log_resource(chunk.toString(), "server's stdout");
@@ -184,7 +184,7 @@ process.on('exit', function() {
 before(function(done) {
     //log_resource('trying to start', 'server');
     server_process = require('child_process').spawn(
-        'node', ['msa-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, ADMIN_USER: admin.email, MONGO_URL: mongo_url } }
+        'node', ['msa-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, DEFAULT_ADMIN: admin.email, MONGO_URL: mongo_url } }
     );
     server_process.stdout.on('data', function(chunk) {
         log_resource(chunk.toString(), "server's stdout");
@@ -269,7 +269,7 @@ module.exports = {
                     cb(done);
                 });
             };
-            initCookie(false, false);
+            initCookie(false);
         }
     }
 };

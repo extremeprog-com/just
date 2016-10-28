@@ -19,7 +19,7 @@ require('../../tests_globals.js').init();
       assert.ifError(err);
 
       assert(res);
-      assert(res.statusCode == 200);
+      assert.equal(res.statusCode, 200);
       assert(res.body);
       assert(res.body[0] === null);
       assert(res.body[1]);

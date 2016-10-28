@@ -22,7 +22,7 @@ classes.Auth = {
         return function(success, fail) {
             app.post('/api/auth', app.parser(function (site, data, cb, user, res) {
                 var hash = new crypto.Hash('MD5');
-                hash.update(data[0] + data[1] + secret);
+                hash.update(data[0] + data[1] + site.hash_key);
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
                 collectionUsers.find({_id: data[0], passwordHash: hash.digest('base64')}).toArray(function (err, users) {
@@ -30,7 +30,7 @@ classes.Auth = {
                         cb(err);
                     } else {
                         if (users.length) {
-                            var token = utils.encrypt(JSON.stringify({
+                            var token = utils.encrypt(site.crypto_key, JSON.stringify({
                                 ts: new Date / 1000,
                                 user: data[0],
                                 random: Math.random().toString().substr(2) + Math.random().toString().substr(2) + Math.random().toString().substr(2) + Math.random().toString().substr(2)
@@ -76,6 +76,12 @@ classes.Auth = {
                     return;
                 }
 
+                if ( data[0].admin && !user.admin ) {
+                    res.status(403);
+                    cb(['Cannot register user with admin rights']);
+                    return;
+                }
+
                 var re_email = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
                 if( !re_email.test(data[0]._id) ) {
@@ -85,7 +91,7 @@ classes.Auth = {
                 }
 
                 var hash = new crypto.Hash('MD5');
-                hash.update(data[0]._id + data[0].password + secret);
+                hash.update(data[0]._id + data[0].password + site.hash_key);
 
                 var new_user = data[0];
                 new_user._originated  = parseInt(new Date() / 1000);
@@ -106,7 +112,7 @@ classes.Auth = {
                             } else {
                                 //io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id + '-users' });
 
-                                var code = utils.encrypt(JSON.stringify({
+                                var code = site._id + ':' + utils.encrypt(site.crypto_key, JSON.stringify({
                                     date: new Date().getTime() / 1000,
                                     r: Math.random().toString().substr(2),
                                     email: new_user._id,
@@ -165,18 +171,34 @@ classes.Auth = {
             }));
 
             app.get('/api/auth/activate', function (req, res) {
-                try {
-                    var json = utils.decrypt(req.query.code);
-                    var params = JSON.parse(json);
-                } catch(e) {
-                    console.error(e, e.stackTrace, json);
-                    res.sendStatus(500);
-                    return;
-                }
+                var code = req.query.code.split(':', 2);
+                var site_id = code[0];
+                code = code[1];
 
-                var collectionUsers = app.db.collection('site-' + params.site + '-users');
-                collectionUsers.update({_id: params.email}, {$set: {"active": 1}}, function (err, response) {
-                    res.send([err, true]);
+
+                console.log('hey!');
+                app.db.collection('_sites').findOne({_id: site_id}).then(function(site) {
+
+                    if(!site) {
+                        console.error('site not found: ' + site_id, err, new Error().stack);
+                        res.sendStatus(500);
+                    } else {
+                        try {
+                            var json = utils.decrypt(site.crypto_key, code);
+                            var params = JSON.parse(json);
+                        } catch(e) {
+                            console.error(e, e.stack, json);
+                            res.sendStatus(500);
+                        }
+
+                        var collectionUsers = app.db.collection('site-' + params.site + '-users');
+                        collectionUsers.update({_id: params.email}, {$set: {"active": 1}}, function (err, response) {
+                            res.send([err, true]);
+                        });
+                    }
+                }).catch(function() {
+                    console.error('site not found: ' + site_id, new Error().stack);
+                    res.sendStatus(500);
                 });
             });
 
@@ -264,7 +286,7 @@ classes.Auth = {
                                 email: found_user._id,
                                 site: site._id
                             };
-                            var code = utils.encrypt(JSON.stringify(params));
+                            var code = utils.encrypt(site.crypto_key, JSON.stringify(params));
                             var reset_token = querystring.stringify({code: code});
                             var link = 'http://' + req.headers.host + '/api/auth/reset_password?' + reset_token;
 
@@ -325,7 +347,7 @@ classes.Auth = {
 
             app.post('/api/auth/reset_password', app.parser(function(site, data, cb, user, res, req) {
                 try {
-                    var json = utils.decrypt(req.query.code);
+                    var json = utils.decrypt(site.crypto_key, req.query.code);
                     var params = JSON.parse(json);
                 } catch(e) {
                     res.send(500);
@@ -340,7 +362,7 @@ classes.Auth = {
 
                 var managed_user = { _id: params.email };
                 var hash = new crypto.Hash('MD5');
-                hash.update(managed_user._id + data[0].password + secret);
+                hash.update(managed_user._id + data[0].password + site.hash_key);
                 managed_user.passwordHash = hash.digest('base64');
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
@@ -368,6 +390,8 @@ classes.Auth = {
 
             app.post('/api/auth/change_password', app.parser(function(site, data, cb, user, res, req) {
 
+                console.log(user);
+
                 if(!user) {
                     res.status(401);
                     res.send(['Unauthorised requests are not allowed']);
@@ -393,7 +417,7 @@ classes.Auth = {
                 }
 
                 var old_password_hash = new crypto.Hash('MD5');
-                old_password_hash.update(user._id + data[0].old_password + secret);
+                old_password_hash.update(user._id + data[0].old_password + site.hash_key);
                 var old_password_hash_check = old_password_hash.digest('base64');
 
                 if(old_password_hash_check !== user.passwordHash) {
@@ -403,7 +427,7 @@ classes.Auth = {
                 }
 
                 var hash = new crypto.Hash('MD5');
-                hash.update(user._id + data[0].new_password + secret);
+                hash.update(user._id + data[0].new_password + site.hash_key);
                 var managed_user = { _id: user._id, passwordHash: hash.digest('base64') };
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
@@ -451,7 +475,7 @@ classes.Auth = {
                 var managed_user = data[0];
                 if(managed_user.password) {
                     var hash = new crypto.Hash('MD5');
-                    hash.update(managed_user._id + managed_user.password + secret);
+                    hash.update(managed_user._id + managed_user.password + site.hash_key);
                     managed_user.passwordHash = hash.digest('base64');
 
                     delete managed_user.password;
