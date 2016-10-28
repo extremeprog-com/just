@@ -15,7 +15,7 @@ mgoAdmin.controller('ModalAddUserPass', function($scope, $mongoSitesApi) {
                 })
                 .catch(function(error) {
                     $scope.state.loading = false;
-                    alert(error);
+                    console.error(error);
                     $scope.handleCloseModal();
                 });
         }
