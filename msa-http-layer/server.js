@@ -223,6 +223,8 @@ function parser(data_handle, custom_handle) {
                                 _id: auth_data.user,
                                 active_sessions: token
                             }).toArray(function (err, users) {
+
+
                                 if(err) {
                                     res.send(['unknown, database error. contact administrator.']);
                                     console.error(err, new Error().stack);
@@ -234,13 +236,26 @@ function parser(data_handle, custom_handle) {
                                     user = users[0]
                                 }
 
-                                if(user && (user._id == site.default_admin || user._id == process.env.DEFAULT_ADMIN)) {
-                                    user.admin = true
-                                }
-                                if (data_handle) {
-                                    handleRequest();
-                                } else {
-                                    custom_handle(req, res, site, users[0]);
+                                /* Modify User fields before the responce */
+                                FireRequest(
+                                    Auth_ModifyUserRequest({ user: user })
+                                    , function(result) {
+                                        proceedUser(result.user);
+                                    }
+                                    , function() {
+                                        proceedUser(user);
+                                    }
+                                );
+
+                                function proceedUser(user) {
+                                    if(user && (user._id == site.default_admin || user._id == process.env.DEFAULT_ADMIN)) {
+                                        user.admin = true
+                                    }
+                                    if (data_handle) {
+                                        handleRequest();
+                                    } else {
+                                        custom_handle(req, res, site, user);
+                                    }
                                 }
                             })
 
