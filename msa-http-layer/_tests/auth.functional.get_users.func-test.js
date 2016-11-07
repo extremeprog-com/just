@@ -29,11 +29,10 @@ it("should get particular user", function(done) {
         assert(res.body);
         assert(res.body[0] === null);
         assert(res.body[1]);
+        assert(res.body[1][0]);
 
-        assert.equal(res.body[1]._id, testUserToGet._id);
+        assert.equal(res.body[1][0]._id, testUserToGet._id);
 
         done();
     });
 });
-
-initCookie(false);

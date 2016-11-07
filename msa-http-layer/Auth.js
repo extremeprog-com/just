@@ -212,7 +212,7 @@ classes.Auth = {
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
 
-                collectionUsers.find({}).toArray(function(err, data) {
+                collectionUsers.find( (data && data[0]) || {} ).toArray(function(err, data) {
                     if(data && data instanceof Array) {
                         data.map(function(it) {
                             delete it.passwordHash;
@@ -507,3 +507,4 @@ classes.Auth = {
         }
     }
 };
+
