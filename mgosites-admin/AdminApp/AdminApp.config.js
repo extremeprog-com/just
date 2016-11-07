@@ -19,7 +19,13 @@ mgoAdmin.config(function ($stateProvider, $urlRouterProvider) {
             url: '/login',
             templateUrl: '/mgosites-admin/AdminApp/AdminLogin.html',
             controller: 'mgoAdminLogin'
-        });
+        })
+        .state('register', {
+            url: '/register',
+            templateUrl: '/mgosites-admin/AdminApp/AdminRegister.html',
+            controller: 'mgoAdminRegister'
+        })
+    ;
 
     //$urlRouterProvider.otherwise('/initialization');
 

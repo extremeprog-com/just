@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+require('core-os');
+
+classes = {};
+
+require('./JohnnyHelper.js');
+require('./JohnnyGenerator.js');
+
+Core.registerRequestPoint('Johnny_CommandRequest');
+
+classes.Johnny = {
+	__init: function() {
+		FireRequest(
+			new Johnny_CommandRequest({params: process.argv.slice(2, process.argv.length)}),
+			function() {
+				
+			},
+			function() {
+
+			}
+		)
+	}
+}
+
+Core.processNamespace(classes);
