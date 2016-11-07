@@ -11,7 +11,15 @@ const ngcompile = require('ng-node-compile');
 
 transporter.use('compile', htmlToText());
 
+/** @name Auth_ResetPasswordForbidRq*/
 Core.registerRequestPoint('Auth_ResetPasswordForbidRq');
+
+/** @name Auth_ModifyUserRequest
+ * Request for modification user object before responce
+ * used in parse function (server.js)
+ *
+ */
+Core.registerRequestPoint('Auth_ModifyUserRequest');
 
 classes.Auth = {
     initAuthAPI: function() {
