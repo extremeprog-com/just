@@ -78,9 +78,6 @@ module.exports = {
                 ],
                 "user could not register with admin rights": [
                     "func msa-http-layer/_tests/auth.secure.register_user_admin: return error on trying register with admin rights"
-                ],
-                "common user should not be able to get other users": [
-                    "func msa-http-layer/_tests/auth.secure.get_users: return error on trying to get other users for unauthorized, login as a common user, return error on trying to get other users"
                 ]
             },
             "Attribute: Configurable": {

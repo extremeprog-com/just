@@ -216,12 +216,6 @@ classes.Auth = {
                     return;
                 }
 
-                if(!user.admin) {
-                    res.status(403);
-                    cb('Only admins can use this function');
-                    return;
-                }
-
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
 
                 collectionUsers.find( (data && data[0]) || {} ).toArray(function(err, data) {
