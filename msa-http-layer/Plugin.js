@@ -18,8 +18,6 @@ classes.Plugin = {
         return function (success, fail) {
             app.post('/api/plugins/save', app.parser(function (site, data, cb, user, res, req) {
 
-                console.log(user);
-
                 if (!user) {
                     res.status(403);
                     cb(['Authorization required']);
@@ -68,8 +66,6 @@ classes.Plugin = {
                                 user: user,
                                 obj : old
                             }), function (restrictions_existing) {
-
-                                console.log('ex', restrictions_existing);
 
                                 if (!restrictions_existing.write_plugin) {
                                     res.status(403);
@@ -200,7 +196,6 @@ classes.Plugin = {
                 Object.keys(plugin).map(function(name) {
                     if(plugin[name] instanceof Array) {
                         plugin[name].map(function(rule) {
-                            //console.log(rule, user, obj);
                             if(object_match(user, rule[0]) && object_match(obj, rule[1])) {
                                 name2rule[name] = merge(name2rule[name], rule[2]);
                             }
@@ -273,7 +268,6 @@ classes.Plugin = {
             var pending = 0;
             app.db.listCollections().toArray(function(err, data) {
                 data.map(function(it) {
-                    console.log(it);
                     var matches;
                     if(matches = it.name.match(/^site-(.*)$/)) {
                         if(it.name.match(/-(plugins|users)$/)) {
@@ -282,7 +276,6 @@ classes.Plugin = {
 
                         pending++;
                         app.db.collection(it.name + '-plugins').find({}, {sort: {_order: 1}}).toArray(function(err, docs) {
-                            console.log(err, docs);
                             if(err) {
                                 fail();
                                 return;

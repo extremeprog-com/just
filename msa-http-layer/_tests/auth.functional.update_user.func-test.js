@@ -30,7 +30,7 @@ require('../../tests_globals.js').init();
         });
 
         it("should get updated user", function(done) {
-            api_post('/api/auth/users', [{_id: test_data.email}], function(err, res) {
+            api_post('/api/auth/check', function(err, res) {
                 assert.ifError(err);
 
                 assert(res);
@@ -60,7 +60,7 @@ require('../../tests_globals.js').init();
         });
 
         it("should get updated user without removed field", function(done) {
-            api_post('/api/auth/users', [{_id: test_data.email}], function(err, res) {
+            api_post('/api/auth/check', function(err, res) {
                 assert.ifError(err);
 
                 assert(res);

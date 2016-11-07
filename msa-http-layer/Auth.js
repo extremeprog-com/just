@@ -84,7 +84,7 @@ classes.Auth = {
                     return;
                 }
 
-                if ( data[0].admin && !user.admin ) {
+                if ( data[0].admin && (!user || !user.admin) ) {
                     res.status(403);
                     cb(['Cannot register user with admin rights']);
                     return;
@@ -183,8 +183,6 @@ classes.Auth = {
                 var site_id = code[0];
                 code = code[1];
 
-
-                console.log('hey!');
                 app.db.collection('_sites').findOne({_id: site_id}).then(function(site) {
 
                     if(!site) {
@@ -215,6 +213,12 @@ classes.Auth = {
                 if (!user) {
                     res.status(403);
                     cb('Authorization required');
+                    return;
+                }
+
+                if(!user.admin) {
+                    res.status(403);
+                    cb('Only admins can use this function');
                     return;
                 }
 
@@ -399,8 +403,6 @@ classes.Auth = {
 
             app.post('/api/auth/change_password', app.parser(function(site, data, cb, user, res, req) {
 
-                console.log(user);
-
                 if(!user) {
                     res.status(401);
                     res.send(['Unauthorised requests are not allowed']);
@@ -463,11 +465,13 @@ classes.Auth = {
 
             app.post('/api/auth/update', app.parser(function(site, data, cb, user, res) {
                 if (!user) {
+                    res.status(403);
                     cb(['Authorization required']);
                     return;
                 }
 
                 if (user._id != data[0]._id && !user.admin) {
+                    res.status(400);
                     cb(['Only account owner or admin can do this']);
                     return;
                 }
@@ -477,8 +481,13 @@ classes.Auth = {
                 }
 
                 if (!data[0]._id) {
-                    cb(['Fields _id required']);
+                    cb(['Field _id is required']);
                     return;
+                }
+
+                // it's not possible to update passwordHash from the outside
+                if(data[0].passwordHash) {
+                    delete data[0].passwordHash;
                 }
 
                 var managed_user = data[0];
@@ -494,9 +503,15 @@ classes.Auth = {
 
                 collectionUsers.findOne({_id: managed_user._id}, function(err, user_exists) {
                     if(user_exists) {
-                        for (var i in managed_user) if (managed_user.hasOwnProperty(i) && ['_id'].indexOf(i) < 0 ) {
+                        for (var i in managed_user) if (managed_user.hasOwnProperty(i) && ['_id', '_originated'].indexOf(i) < 0 ) {
                             user_exists[i] = managed_user[i];
                         }
+
+                        for(var j in user_exists) if(user_exists.hasOwnProperty(j)
+                            && !managed_user.hasOwnProperty(j) && ['_id', '_originated', 'passwordHash', 'active_sessions'].indexOf(j) < 0) {
+                            delete user_exists[j];
+                        }
+
                         collectionUsers.updateOne({_id: managed_user._id}, user_exists, function(err, data) {
                             if(err) {
                                 cb(err);
@@ -515,4 +530,3 @@ classes.Auth = {
         }
     }
 };
-
