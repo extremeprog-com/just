@@ -3,6 +3,11 @@ FROM ubuntu:16.04
 ENV PORT=80
 ENV PRODUCTION=1
 
+ENV MSA_SITE_NAME=msa
+ENV MSA_FREE_REGISTER=true
+ENV MSA_ADMIN_EMAIL=admin@msa.com
+ENV MSA_ADMIN_PASSWORD=admin
+
 VOLUME /var/lib/mongodb
 
 RUN apt-get update

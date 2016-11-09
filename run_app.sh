@@ -18,5 +18,13 @@ fi
 
 perl -pi -e 's/{site_name}/'`echo $MSA_SITE_NAME`'/g' mgosites-admin/index.html
 
+if [ -z "$MSA_SITE_NAME" ]; then
+    ./prepare_site --site-name=$MSA_SITE_NAME --domain-name=$MSA_DOMAIN_NAME --free-register=$MSA_FREE_REGISTER
+fi
+
+if [[ -z "$MSA_ADMIN_EMAIL" ]] && [[ -z "$MSA_ADMIN_PASSWORD" ]] && [[ -z "$MSA_SITE_NAME" ]]; then
+    node msa-config-layer/add_admin_user.js --email=$MSA_ADMIN_EMAIL --password=$MSA_ADMIN_PASSWORD --site-name=$MSA_SITE_NAME
+fi
+
 cd /root/mongo-sites-api/
 node msa-http-layer/server.js
