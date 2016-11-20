@@ -1,5 +1,5 @@
 # mongo-sites-api
-A convinient tool for fast prototyping of web and mobile applications.
+A convenient tool for fast prototyping of web and mobile applications.
 
 ## Installation
 
