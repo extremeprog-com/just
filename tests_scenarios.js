@@ -127,6 +127,25 @@ module.exports = {
             }
         },
 
+        "Component: Admin": {
+            "Attribute: Functional": {
+                "user should be able to request db init": [
+                    "unit msa-http-layer/_tests/admin.functional.dbinit : init db",
+                    "unit msa-http-layer/_tests/admin.functional.dbclone: clone db from reference"
+                ]
+            },
+            "Attribute: Secure": {
+                "user should not be able to request db init without secret key": [
+                    "unit msa-http-layer/_tests/admin.secure.dbinit : return error on init db without secret key, return error on clone db without secret key"
+                ]
+            },
+            "Attribute: Foolproof": {
+                "user should not be able to request db init without required params": [
+                    "unit msa-http-layer/_tests/admin.secure.dbinit : return error on init db without site name, return error on clone db without site name"
+                ]
+            }
+        },
+
         "Component: Content": {
             "Attribute: Functional": {
                 "user should be able to get script files": [

@@ -52,6 +52,7 @@ var sitesCollection;
 classes = {};
 
 
+require('./Admin.js');
 require('./Auth.js');
 require('./Plugin.js');
 require('./Snapshots.js');
