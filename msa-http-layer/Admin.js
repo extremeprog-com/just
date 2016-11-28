@@ -1,5 +1,8 @@
 require('core-os');
 
+/** @name Admin_CloneDbRq*/
+Core.registerRequestPoint('Admin_CloneDbRq');
+
 classes.Admin = {
     initAdminAPI: function() {
         var
@@ -42,49 +45,79 @@ classes.Admin = {
                     return;
                 }
 
-                ['site-reference', 'site-reference-users', 'site-reference-plugins', 'site-reference-snapshots'].map(function(collname, i) {
-                    var collname = collname.replace('reference', data.refname);
+                app.db.collection('site-_root-users', function(err, col) {
+                    col.find({"_id": 'admin'}).toArray(function(arr, adata) {
 
-                    app.db.listCollections({name: collname})
-                        .next(function(err, info) {
-                            if(!info) {
-                                console.log('[INFO] No reference site collection ' + collname + ' found. Nothing to do.');
-                            } else {
-                                app.db.collection(collname, function(err, scol) { // open source collection
-                                    app.db.collection(collname.replace('reference', data.sitename), function(err, dcol) { // open destination collection
-                                        scol.find().toArray(function(arr, sdata) {
-                                            dcol.insert(sdata, {save: true}, function(err, docs) {});
-
-                                            if(i === 3) {
-                                                _createSite();
-                                            }
-                                        })
-                                    })
-                                })
-                            }
+                        if(adata[0] && adata[0].api_key == data.key) {
+                            FireRequest(
+                                new Admin_CloneDbRq({app: app, data: data})
+                                , function() {
+                                    res.status(200);
+                                    cb([null, 'Db has been cloned.'])
+                                }
+                                , function() {});
+                        } else {
+                            res.status(403);
+                            cb(['Authorization required. Wrong key.']);
                         }
-                    );
-                });
-
-                function _createSite() {
-                    app.db.createCollection('_sites', function(err, scol) {
-                        var crypto_key = '', hash_key = '';
-
-                        for (var i = 0; i < 5; i++) {
-                            crypto_key += Math.random().toString(32).substr(2);
-                            hash_key   += Math.random().toString(32).substr(2);
-                        }
-
-                        scol.insert({_id: data.sitename, hash_key: hash_key, crypto_key: crypto_key, free_register: true, names: []}, {save: true}, function() {
-                            res.status(200);
-                            cb([null, 'Db has been cloned.'])
-                        })
                     })
-                }
-
+                });
             }));
 
             success();
         };
+    }
+    , cloneDb: function() {
+        var
+              request = CatchRequest(Admin_CloneDbRq)
+            , app     = request.app
+            , data    = request.data;
+
+        return function(success, fail) {
+            ['site-reference', 'site-reference-users', 'site-reference-plugins', 'site-reference-snapshots'].map(function(collname, i) {
+                var collrefname = collname.replace('reference', data.refname);
+
+                app.db.listCollections({name: collrefname})
+                    .next(function(err, info) {
+                        if(!info) {
+                            console.log('[INFO] No reference site collection ' + collrefname + ' found. Nothing to do.');
+
+                            if(i === 3) {
+                                success();
+                            }
+                        } else {
+                            app.db.collection(collrefname, function(err, scol) { // open source collection
+                                app.db.createCollection(collname.replace('reference', data.sitename), function(err, dcol) { // open destination collection
+                                    scol.find().toArray(function(arr, sdata) {
+                                        sdata.map(function(s) {
+                                            dcol.update(s, function(err, docs) {});
+                                        });
+
+                                        if(i === 3) {
+                                            _createSite();
+                                        }
+                                    })
+                                })
+                            })
+                        }
+                    }
+                );
+            });
+
+            function _createSite() {
+                app.db.createCollection('_sites', function(err, scol) {
+                    var crypto_key = '', hash_key = '';
+
+                    for (var i = 0; i < 5; i++) {
+                        crypto_key += Math.random().toString(32).substr(2);
+                        hash_key   += Math.random().toString(32).substr(2);
+                    }
+
+                    scol.insert({_id: data.sitename, hash_key: hash_key, crypto_key: crypto_key, free_register: true, names: []}, {save: true}, function() {
+                        success();
+                    })
+                })
+            }
+        }
     }
 };
