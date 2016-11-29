@@ -1,9 +1,12 @@
 mgoAdmin.controller('mgoAdminLogin', function($scope, $mongoSitesApi, $state) {
     $scope.state = {
           login: localStorage.email || ''
+        , site: (location.search.match(/[?&]site=([^&]+)/) || [] )[1] || ''
         , password: ''
         , error: ''
     };
+
+    console.log($scope.state.site);
 
     $scope.handleLogin = function() {
         var login       = $scope.state.login.trim();

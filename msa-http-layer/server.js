@@ -51,7 +51,6 @@ var sitesCollection;
 
 classes = {};
 
-
 require('./Admin.js');
 require('./Auth.js');
 require('./Plugin.js');
@@ -463,11 +462,11 @@ app.post('/api/graph_search', parser(function (site, data, cb) {
     });
 }));
 
-
 app.get('/', function(req, res) {
     fs.readFile('./mgosites-admin/index.html', function (err, data) {
         res.send( data.toString() );
     });
 });
+
 
 Core.processNamespace(classes);

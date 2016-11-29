@@ -42,6 +42,9 @@ server_process = null;
 server_port = 64000 + parseInt(Math.random() * 1535);
 mongo_url = 'mongodb://localhost:27017/mongo-sites';
 
+var mongodb = require('mongodb');
+var mongoClient = mongodb.MongoClient;
+
 user  = {};
 admin = {};
 
@@ -81,6 +84,23 @@ var headers = {
 };
 
 jar = false;
+
+
+create_test_site = function(cb) {
+    mongoClient.connect(mongo_url, function (err, dblink) {
+        console.log('Connected to mongodb');
+        db = dblink;
+        db.DBObject = db.db("mongo-sites");
+        var rootUsersCollection = db.collection('site-_root-users');
+        rootUsersCollection.findOne({_id: "admin"}).then(function(globalAdminUser) {
+            console.log('sdfsdfs');
+            system_api_key = globalAdminUser.api_key;
+            api_post('/api/admin/site_create', { sitename: "test", api_key: system_api_key, free_register: true, names: ['localhost'] }, function() {
+                cb();
+            })
+        })
+    });
+};
 
 initCookie = function(User, opt_use_it) {
 
@@ -192,22 +212,26 @@ before(function(done) {
     server_process.stderr.on('data', function(chunk) {
         log_resource(chunk.toString(), "server's stderr");
     });
+    console.log('kukuku');
     (function waitServer() {
         request("http://localhost:" + server_port + "/", function(err) {
             if (err) {
                 waitServer()
             } else {
-                create_user_for_test(admin.email, admin.password, function(created_user) {
-                    //admin.token = created_user.token;
-                    admin.jar   = created_user.jar;
 
-                    create_user_for_test(user.email, user.password, function(created_user) {
-                        //user.token = created_user.token;
-                        user.jar   = created_user.jar;
+                create_test_site(function() {
+                    create_user_for_test(admin.email, admin.password, function(created_user) {
+                        //admin.token = created_user.token;
+                        admin.jar   = created_user.jar;
 
-                        done();
+                        create_user_for_test(user.email, user.password, function(created_user) {
+                            //user.token = created_user.token;
+                            user.jar   = created_user.jar;
+
+                            done();
+                        });
                     });
-                });
+                })
             }
         })
     })();

@@ -3,6 +3,13 @@
         <h3>[MongoSites Admin]</h3>
         <input
                 type="text"
+                placeholder="Site"
+                class="mgp-lf-input"
+                onchange="location.href='?site=' + this.value"
+                ng-model="state.site"
+                />
+        <input
+                type="text"
                 placeholder="Email"
                 class="mgp-lf-input"
                 ng-change="handleEmailChange()"
