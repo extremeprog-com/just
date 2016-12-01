@@ -37,6 +37,8 @@ classes.Auth = {
                         cb(err);
                     } else {
                         if (users.length) {
+                            if(!users[0].passwordHash) return;
+
                             var
                                   hash = new crypto.Hash('MD5')
                                 , salt = users[0].passwordHash.split(':')[0];

@@ -6,7 +6,10 @@
         <script src="/socket.io/socket.io.js"></script>
 
         <script>
-            document.write('\<script src="/mongoSitesApi.js?site=' + ( location.search.match(/[?&]site=([^&]+)/) ? location.search.match(/[?&]site=([^&]+)/)[1] : '_root' ) + '"><\/script>')
+            document.write('\<script src="/mongoSitesApi.js?site=' + (localStorage.sitename ||  '_root' ) + '"><\/script>')
+        </script>
+        <script>
+            MSA_SITE = localStorage.sitename ||  '_root';
         </script>
         <script src="/mgosites-admin/build/app.js"></script>
         <script src="/mongoSitesApi.angular.js"></script>

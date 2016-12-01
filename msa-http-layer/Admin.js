@@ -178,7 +178,7 @@ classes.Admin = {
 
             });
 
-            app.get('/api/admin/sites', function(req, res) {
+            app.post('/api/admin/sites', function(req, res) {
                 var sites = Object.keys(req.cookies)
                     .filter(function(it) { return it.match(/:_auth$/) })
                     .map(function(it) { return it.match(/^(.+):_auth$/)[1] })

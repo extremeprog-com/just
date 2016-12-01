@@ -1,6 +1,13 @@
 <div class="mgo-admin-panel">
-    <h3>[MongoSites Admin / {{User._id}}]</h3>
-    <div class="mgo-admin-logout" ng-click="handleLogout()">LOGOUT</div>
+    <h3>[MongoSites Admin / {{localStorage.sitename}}]</h3>
+    <div class="mgo-admin-userlink" ng-click="menuOpen = !menuOpen">{{User._id}}</div>
+    <div class="mgo-admin-user-menu" ng-show="menuOpen">
+        <ul>
+            <li ng-if="site._id !== localStorage.sitename" ng-repeat="site in sites" ng-click="switchSite(site._id)">Switch to <b>{{site._id}}</b></li>
+            <li class="mgo-admin-user-menu-ll" ng-click="switchSite('')">Add Site Account</li>
+            <li class="mgo-admin-user-menu-ll" ng-click="handleLogout()">Logout</li>
+        </ul>
+    </div>
 </div>
 
 <div ui-view name="menuContent"></div>

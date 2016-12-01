@@ -48,7 +48,7 @@ mongoSitesApi = (function() {
 
                 if (location.host.match(/^(localhost|127.\d+.\d+.\d+)(:\d+)?$/) || 
                     location.protocol == 'file:') {
-                    xmlhttp.setRequestHeader('X-MongoApi-Site', '{site}')
+                    xmlhttp.setRequestHeader('X-MongoApi-Site', (typeof MSA_SITE !== 'undefined') ? MSA_SITE : '{site}')
                 }
 
                 xmlhttp.onreadystatechange = function () {
@@ -304,6 +304,9 @@ mongoSitesApi = (function() {
         },
         auth_update: function(options) {
             return this._call('auth/update', [options])
+        },
+        admin_sites: function() {
+            return this._call('admin/sites', [])
         }
     }
 })();
