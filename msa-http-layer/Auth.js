@@ -29,25 +29,35 @@ classes.Auth = {
 
         return function(success, fail) {
             app.post('/api/auth', app.parser(function (site, data, cb, user, res) {
-                var hash = new crypto.Hash('MD5');
-                hash.update(data[0] + data[1] + site.hash_key);
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
-                collectionUsers.find({_id: data[0], passwordHash: hash.digest('base64')}).toArray(function (err, users) {
+
+                collectionUsers.find({_id: data[0]}).toArray(function (err, users) {
                     if (err) {
                         cb(err);
                     } else {
                         if (users.length) {
-                            var token = utils.encrypt(site.crypto_key, JSON.stringify({
-                                ts: new Date / 1000,
-                                user: data[0],
-                                random: Math.random().toString().substr(2) + Math.random().toString().substr(2) + Math.random().toString().substr(2) + Math.random().toString().substr(2)
-                            }));
+                            var
+                                  hash = new crypto.Hash('MD5')
+                                , salt = users[0].passwordHash.split(':')[0];
 
-                            collectionUsers.update({_id: data[0]}, {$addToSet: {"active_sessions": token}}, function (err, response) {
-                                res.cookie(site._id + ':_auth', token, {maxAge: 365 * 24 * 3600 * 1000});
-                                cb(null, {site: site._id, token: token});
-                            });
+                            hash.update(data[0] + data[1] + salt);
+
+                            if(users[0].passwordHash !== salt + ':' + hash.digest('base64')) {
+                                res.status(400);
+                                cb('Login and password does not match');
+                            } else {
+                                var token = utils.encrypt(site.crypto_key, JSON.stringify({
+                                    ts: new Date / 1000,
+                                    user: data[0],
+                                    random: Math.random().toString().substr(2) + Math.random().toString().substr(2) + Math.random().toString().substr(2) + Math.random().toString().substr(2)
+                                }));
+
+                                collectionUsers.update({_id: data[0]}, {$addToSet: {"active_sessions": token}}, function (err, response) {
+                                    res.cookie(site._id + ':_auth', token, {maxAge: 365 * 24 * 3600 * 1000});
+                                    cb(null, {site: site._id, token: token});
+                                });
+                            }
                         } else {
                             res.status(400);
                             cb('Login and password does not match');
@@ -98,12 +108,16 @@ classes.Auth = {
                     return;
                 }
 
-                var hash = new crypto.Hash('MD5');
-                hash.update(data[0]._id + data[0].password + site.hash_key);
+                var
+                      hash = new crypto.Hash('MD5')
+                    , salt = Math.random().toString(32).substr(2);
+
+                hash.update(data[0]._id + data[0].password + salt);
 
                 var new_user = data[0];
+
                 new_user._originated  = parseInt(new Date() / 1000);
-                new_user.passwordHash = hash.digest('base64');
+                new_user.passwordHash = salt + ':' + hash.digest('base64');
 
                 delete new_user.password;
 
@@ -126,9 +140,8 @@ classes.Auth = {
                                     email: new_user._id,
                                     site: site._id
                                 }));
-                                var link = 'http://' + req.headers.host + '/api/auth/activate?' + querystring.stringify({code: code});
 
-                                console.log('activation_link: ' + link);
+                                var link = 'http://' + req.headers.host + '/api/auth/activate?' + querystring.stringify({code: code});
 
                                 FireRequest(new PluginUtilizer_MatchObjectRq({site: site, user: user, obj: new_user}), function(data) {
 
@@ -367,10 +380,13 @@ classes.Auth = {
                     return;
                 }
 
-                var managed_user = { _id: params.email };
-                var hash = new crypto.Hash('MD5');
-                hash.update(managed_user._id + data[0].password + site.hash_key);
-                managed_user.passwordHash = hash.digest('base64');
+                var
+                      managed_user = { _id: params.email }
+                    , hash = new crypto.Hash('MD5')
+                    , salt = Math.random().toString(32).substr(2);
+
+                hash.update(managed_user._id + data[0].password + salt);
+                managed_user.passwordHash = salt + ':' + hash.digest('base64');
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
 
@@ -421,19 +437,24 @@ classes.Auth = {
                     return;
                 }
 
-                var old_password_hash = new crypto.Hash('MD5');
-                old_password_hash.update(user._id + data[0].old_password + site.hash_key);
-                var old_password_hash_check = old_password_hash.digest('base64');
+                var
+                      old_password_hash = new crypto.Hash('MD5')
+                    , salt = user.passwordHash.split(':')[0];
 
-                if(old_password_hash_check !== user.passwordHash) {
+                old_password_hash.update(user._id + data[0].old_password + salt);
+
+                if(salt + ':' + old_password_hash.digest('base64') !== user.passwordHash) {
                     res.status(400);
                     cb(['Old password is wrong']);
                     return;
                 }
 
-                var hash = new crypto.Hash('MD5');
-                hash.update(user._id + data[0].new_password + site.hash_key);
-                var managed_user = { _id: user._id, passwordHash: hash.digest('base64') };
+                var
+                      hash = new crypto.Hash('MD5')
+                    , new_salt = Math.random().toString(32).substr(2);
+
+                hash.update(user._id + data[0].new_password + new_salt);
+                var managed_user = { _id: user._id, passwordHash: new_salt + ':' + hash.digest('base64') };
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
 
@@ -486,9 +507,12 @@ classes.Auth = {
 
                 var managed_user = data[0];
                 if(managed_user.password) {
-                    var hash = new crypto.Hash('MD5');
-                    hash.update(managed_user._id + managed_user.password + site.hash_key);
-                    managed_user.passwordHash = hash.digest('base64');
+                    var
+                          hash = new crypto.Hash('MD5')
+                        , salt = Math.random().toString(32).substr(2);
+
+                    hash.update(managed_user._id + managed_user.password + salt);
+                    managed_user.passwordHash = salt + ':' + hash.digest('base64');
 
                     delete managed_user.password;
                 }

@@ -54,11 +54,10 @@ classes.Admin = {
                                     }
                                 };
 
-                                var crypto_key = '', hash_key = '';
+                                var crypto_key = '';
 
                                 for (var i = 0; i < 5; i++) {
                                     crypto_key    += Math.random().toString(32).substr(2);
-                                    hash_key      += Math.random().toString(32).substr(2);
                                 }
 
                                 app.db.createCollection('_sites', function (err, collection) {
@@ -207,11 +206,10 @@ classes.Admin = {
 
             var site_to_update = {"_id": params.options['site-name']};
 
-            var crypto_key = '', hash_key = '', admin_api_key = '';
+            var crypto_key = '', admin_api_key = '';
 
             for (var i = 0; i < 5; i++) {
                 crypto_key    += Math.random().toString(32).substr(2);
-                hash_key      += Math.random().toString(32).substr(2);
                 admin_api_key += Math.random().toString(32).substr(2);
                 admin_api_key += Math.random().toString(32).substr(2);
             }
@@ -219,7 +217,6 @@ classes.Admin = {
             app.db.createCollection('_sites', function (err, collection) {
 
                 collection.find({"_id": params.options['site-name']}).toArray(function (err, sites) {
-                    site_to_update.hash_key   = sites[0] ? sites[0].hash_key   || hash_key   : hash_key;
                     site_to_update.crypto_key = sites[0] ? sites[0].crypto_key || crypto_key : crypto_key;
 
                     collection.update(
@@ -303,14 +300,13 @@ classes.Admin = {
 
             function _createSite() {
                 app.db.createCollection('_sites', function(err, scol) {
-                    var crypto_key = '', hash_key = '';
+                    var crypto_key = '';
 
                     for (var i = 0; i < 5; i++) {
                         crypto_key += Math.random().toString(32).substr(2);
-                        hash_key   += Math.random().toString(32).substr(2);
                     }
 
-                    scol.insert({_id: data.sitename /*, hash_key: hash_key*/, crypto_key: crypto_key, free_register: true, names: []}, {save: true}, function() {
+                    scol.insert({_id: data.sitename, crypto_key: crypto_key, free_register: true, names: []}, {save: true}, function() {
                         success();
                     })
                 })
