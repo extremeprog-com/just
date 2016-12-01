@@ -37,9 +37,6 @@ if (!process.env.PRODUCTION) {
 }
 
 var mongodb = require('mongodb');
-
-var crypto = require('crypto');
-
 var mongoClient = mongodb.MongoClient;
 var db;
 var io;
@@ -55,6 +52,7 @@ require('./Admin.js');
 require('./Auth.js');
 require('./Plugin.js');
 require('./Snapshots.js');
+require('./DbMigrate.js');
 
 var glob = require("glob");
 glob.sync('plugins/**/*.js', {ignore: ['**/node_modules/**', '**/bower_components/**', '**/_tests/**', __filename ]})
