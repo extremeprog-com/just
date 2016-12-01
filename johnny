@@ -21,6 +21,6 @@ classes.Johnny = {
 			}
 		)
 	}
-}
+};
 
 Core.processNamespace(classes);

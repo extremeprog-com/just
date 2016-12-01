@@ -19,11 +19,10 @@ if (!params.options['site-name'] && !params.options['show']) {
     return;
 }
 
-var crypto_key = '', hash_key = '';
+var crypto_key = '';
 
 for (var i = 0; i < 5; i++) {
     crypto_key += Math.random().toString(32).substr(2);
-    hash_key   += Math.random().toString(32).substr(2);
 }
 
 var free_register  = params.options['free-register'] ? (params.options['free-register'] === 'true') : true;
@@ -65,7 +64,6 @@ if(params.options['show']) {
             db.createCollection('_sites', function (err, collection) {
 
                 collection.find({"_id": params.options['site-name']}).toArray(function (err, sites) {
-                    site_to_update.hash_key   = sites[0] ? sites[0].hash_key   || hash_key   : hash_key;
                     site_to_update.crypto_key = sites[0] ? sites[0].crypto_key || crypto_key : crypto_key;
 
                     collection.update(

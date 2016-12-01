@@ -50,11 +50,14 @@ mongoClient.connect(mongoHost, function (err, db) {
                             if (!user.length) {
                                 var new_user = {_id: email};
 
-                                var hash = new crypto.Hash('MD5');
-                                hash.update(new_user._id + password + site[0].hash_key);
+                                var
+                                      hash = new crypto.Hash('MD5')
+                                    , salt = Math.random().toString(32).substr(2);
+
+                                hash.update(new_user._id + password + salt);
 
                                 new_user._originated = parseInt(new Date() / 1000);
-                                new_user.passwordHash = hash.digest('base64');
+                                new_user.passwordHash = salt + ':' + hash.digest('base64');
                                 new_user.admin = true;
                                 new_user.active = 1;
 
