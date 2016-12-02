@@ -137,45 +137,47 @@ classes.Admin = {
                 });
 
                 function handle(data) {
-                    if(!data.api_key) {
+                    if (!data.api_key) {
                         res.status(403);
-                        cb(['Authorization required']);
+                        cb(['Authorization is required']);
                         return;
                     }
 
-                    if(!data.sitename) {
+                    if (!data.sitename) {
                         res.status(403);
-                        cb(['Sitename required']);
+                        cb(['Sitename is required']);
                         return;
                     }
 
-                    if(!data.refname) {
+                    if (!data.refname) {
                         res.status(403);
-                        cb(['Reference site name required']);
+                        cb(['Reference site name is required']);
                         return;
                     }
 
-                    app.db.collection('site-_root-users', function(err, col) {
-                        col.find({"_id": 'admin'}).toArray(function(arr, adata) {
+                    if (!data.dname) {
+                        res.status(403);
+                        cb(['Site domain name is required']);
+                        return;
+                    }
 
-                            if(adata[0] && adata[0].api_key == data.api_key) {
-                                FireRequest(
-                                    new Admin_CloneDbRq({app: app, data: data})
-                                    , function() {
-                                        res.status(200);
-                                        cb([null, 'Db has been cloned.'])
-                                    }
-                                    , function() {});
-                            } else {
-                                res.status(403);
-                                cb(['Authorization required. Wrong key.']);
-                            }
-                        })
-                    });
+                    app.db.collection('site-_root-users').find({"_id": 'admin'}).toArray(function (arr, adata) {
+                        if (adata[0] && adata[0].api_key == data.api_key) {
+                            FireRequest(
+                                new Admin_CloneDbRq({app: app, data: data})
+                                , function () {
+                                    res.status(200);
+                                    cb([null, 'Db has been cloned.'])
+                                }
+                                , function () {
+                                });
+                        } else {
+                            res.status(403);
+                            cb(['Authorization is required. Wrong key.']);
+                        }
+                    })
 
                 }
-
-
             });
 
             app.post('/api/admin/sites', function(req, res) {
@@ -276,15 +278,20 @@ classes.Admin = {
                         if(!info) {
                             console.log('[INFO] No reference site collection ' + collrefname + ' found. Nothing to do.');
 
+                            console.log(i);
+
                             if(i === 3) {
-                                success();
+                                _createSite();
                             }
                         } else {
                             app.db.collection(collrefname, function(err, scol) { // open source collection
                                 app.db.createCollection(collname.replace('reference', data.sitename), function(err, dcol) { // open destination collection
                                     scol.find().toArray(function(arr, sdata) {
+
+                                        console.log(sdata);
+
                                         sdata.map(function(s) {
-                                            dcol.update(s, function(err, docs) {});
+                                            dcol.insert(s, {save: true}, function(err, docs) {});
                                         });
 
                                         if(i === 3) {
@@ -306,7 +313,7 @@ classes.Admin = {
                         crypto_key += Math.random().toString(32).substr(2);
                     }
 
-                    scol.insert({_id: data.sitename, crypto_key: crypto_key, free_register: true, names: []}, {save: true}, function() {
+                    scol.insert({_id: data.sitename, crypto_key: crypto_key, free_register: true, names: [data.dname]}, {save: true}, function() {
                         success();
                     })
                 })
