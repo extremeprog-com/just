@@ -3,8 +3,6 @@ FROM ubuntu:16.04
 ENV PORT=80
 ENV PRODUCTION=1
 
-VOLUME /var/lib/mongodb
-
 RUN apt-get update
 RUN apt-get install -y --force-yes nodejs nodejs-legacy npm mongodb
 RUN npm install -g gulp
