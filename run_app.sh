@@ -16,6 +16,8 @@ if [ ! "$MONGO_URL" ]; then
     done
 fi
 
+bash -c "$ADDITIONAL_PREPARE_COMMAND"
+
 perl -pi -e 's/{site_name}/'`echo $MSA_SITE_NAME`'/g' mgosites-admin/index.html
 
 if [ -z "$MSA_SITE_NAME" ]; then
