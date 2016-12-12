@@ -8,7 +8,7 @@ Intall a Docker container on your server.
 ```
 $ docker run -d -it --restart=always --name=msa \
  -v /var/lib/mongo-sites-api/mongodb:/var/lib/mongodb \
- -p 8080:80 extremeprog/mongo-sites-api:pack
+ -p 8080:80 extremeprog/mongo-sites-api:latest
 ```
 
 Add msa js interface to your project page.

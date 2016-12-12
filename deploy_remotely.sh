@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script is for copying dir of selected container to the remote server
 # and run ./deploy_$container script remotely
