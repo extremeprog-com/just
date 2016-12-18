@@ -23,4 +23,4 @@ RUN bash -c 'npm update || echo'
 COPY . /root/mongo-sites-api
 RUN gulp
 
-ENTRYPOINT ["bash", "/root/mongo-sites-api/run_app.sh"]
+CMD ["bash", "/root/mongo-sites-api/run_app.sh"]
