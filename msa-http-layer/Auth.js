@@ -121,6 +121,10 @@ classes.Auth = {
                 new_user._originated  = parseInt(new Date() / 1000);
                 new_user.passwordHash = salt + ':' + hash.digest('base64');
 
+                if( user && user.admin ) {
+                    new_user.active = 1;
+                }
+
                 delete new_user.password;
 
                 var collectionUsers = app.db.collection('site-' + site._id + '-users');
@@ -135,6 +139,11 @@ classes.Auth = {
                                 cb(err);
                             } else {
                                 //io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id + '-users' });
+
+                                if(user && user.admin) {
+                                    cb(null, response);
+                                    return;
+                                }
 
                                 var code = site._id + ':' + utils.encrypt(site.crypto_key, JSON.stringify({
                                     date: new Date().getTime() / 1000,
