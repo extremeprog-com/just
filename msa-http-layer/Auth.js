@@ -141,7 +141,7 @@ classes.Auth = {
                                 //io.sockets.in('subscribed:all').emit('Collection_Changed', { collection: 'site-' + site._id + '-users' });
 
                                 if(user && user.admin) {
-                                    cb(null, response);
+                                    cb(null, {});
                                     return;
                                 }
 
