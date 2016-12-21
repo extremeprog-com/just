@@ -1,13 +1,11 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+set -e
 if [ ! "$MONGO_URL" ]; then
     chown -R mongodb:mongodb /var/lib/mongodb
-    rm var/lib/mongodb/mongod.lock
+    test -f /var/lib/mongodb/mongod.lock && rm -f $_
     mongod --dbpath=/var/lib/mongodb --smallfiles &
     while true; do
-        mongo --eval "db.stats()" > /dev/null
-        RESULT=$?
-        if [ $RESULT -ne 0 ]; then
+        if mongo --eval "db.stats()" > /dev/null; then
             echo "waiting for mongodb..."
             sleep 2
         else
