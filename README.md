@@ -26,7 +26,7 @@ https://www.youtube.com/watch?v=-_qMagfZtv8
 - really simple data model, forget about async issues in most of cases
 - simple but powerful admin interface
 - Angular(1) integration library (with extremely simple API)
-- install on your own server
+- installation on your own server
 
 Future features: full-featured SQL API from client-side, generators of test data, filestorage, data exchange/client-side orchestration framework for complex distributed applications (games, chats, ...), SAAS version
 
