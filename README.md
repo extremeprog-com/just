@@ -23,9 +23,10 @@ https://www.youtube.com/watch?v=-_qMagfZtv8
 - data change events (over web sockets)
 - extendable on each level by Plugins (auth additional checks, data manipulation checks, additional API commands, ...)
 - really simple data model, forget about async issues in most of cases
+- simple and powerful admin interface
 - Angular(1) integration library (with extremely simple API)
 
-Future features: full-featured SQL API from client-side, data exchange/client-side orchestration framework for complex distributed applications (games, chats, ...)
+Future features: full-featured SQL API from client-side, generators of test data, filestorage, data exchange/client-side orchestration framework for complex distributed applications (games, chats, ...)
 
 ## Installation
 
