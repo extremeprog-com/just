@@ -19,6 +19,7 @@ https://www.youtube.com/watch?v=-_qMagfZtv8
 - pure Mongo API from Client Side
 - security-enabled (templates of allowed requests in a production version)
 - auth API, multi-user support
+- multiple sites support per one Just instance
 - primitive graph API
 - data change events (over web sockets)
 - extendable on each level by Plugins (auth additional checks, data manipulation checks, additional API commands, ...)
