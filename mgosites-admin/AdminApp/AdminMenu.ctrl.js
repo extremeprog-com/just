@@ -1,8 +1,8 @@
-mgoAdmin.controller('mgoAdminMenu', function($scope, $mongoSitesApi, $state) {
+mgoAdmin.controller('mgoAdminMenu', function($scope, $just, $state) {
 
     $scope.User = null;
     // check if the user is logged in or not
-    mongoSitesApi.auth_check().then(
+    Just.auth_check().then(
         function (data) {
 
             $scope.User = data;
@@ -17,7 +17,7 @@ mgoAdmin.controller('mgoAdminMenu', function($scope, $mongoSitesApi, $state) {
     );
 
     $scope.handleLogout = function() {
-        $mongoSitesApi.auth_logout().then(function() {
+        $just.auth_logout().then(function() {
             $state.go("login");
         });
     }

@@ -1,10 +1,11 @@
 /**
- * @license MongoSitesAPI v0.7.0
- * (c) 2015-2016 extremeprog.com https://github.com/extremeprog-com/mongo-sites-api
+ * @license Just v0.7.0
+ *
+ * (c) 2015-2016 extremeprog.com https://github.com/extremeprog-com/just
  * License: MIT
  */
 
-mongoSitesApi = (function() {
+Just = (function() {
 
     function _hmap(object, fn) {
         var dest = {};
@@ -34,7 +35,7 @@ mongoSitesApi = (function() {
     }
 
     return {
-        _server: (typeof MSA_SERVER_URL !== 'undefined') ? MSA_SERVER_URL : '{api_url}',
+        _server: (typeof JUST_SERVER_URL !== 'undefined') ? JUST_SERVER_URL : '{api_url}',
         _call: function (method, data) {
 
             var _this = this;
@@ -46,7 +47,7 @@ mongoSitesApi = (function() {
 
                 xmlhttp.open('POST', _this._server + '/api/' + method, true);
 
-                if (location.host.match(/^(localhost|127.\d+.\d+.\d+)(:\d+)?$/) || 
+                if (location.host.match(/^(localhost|127.\d+.\d+.\d+)(:\d+)?$/) ||
                     location.protocol == 'file:') {
                     xmlhttp.setRequestHeader('X-MongoApi-Site', '{site}')
                 }
@@ -60,7 +61,7 @@ mongoSitesApi = (function() {
                                 resolve(response[1]);
                             } else {
                                 reject(response[0]);
-                                //throw new Error('mongoSitesApi error during ' + method + '(): ' + JSON.stringify(response[0]));
+                                //throw new Error('Just error during ' + method + '(): ' + JSON.stringify(response[0]));
                             }
                         } else {
                             reject()
@@ -86,28 +87,28 @@ mongoSitesApi = (function() {
         },
         mgoInterface: {
             find: function () {
-                return mongoSitesApi._call('_find'     , Array.prototype.slice.call(arguments))
+                return Just._call('_find'     , Array.prototype.slice.call(arguments))
             },
             findOne: function () {
-                return mongoSitesApi._call('_findOne'  , Array.prototype.slice.call(arguments))
+                return Just._call('_findOne'  , Array.prototype.slice.call(arguments))
             },
             aggregate: function () {
-                return mongoSitesApi._call('_aggregate', Array.prototype.slice.call(arguments))
+                return Just._call('_aggregate', Array.prototype.slice.call(arguments))
             },
             insert: function () {
-                return mongoSitesApi._call('_insert'   , Array.prototype.slice.call(arguments))
+                return Just._call('_insert'   , Array.prototype.slice.call(arguments))
             },
             update: function () {
-                return mongoSitesApi._call('_update'   , Array.prototype.slice.call(arguments))
+                return Just._call('_update'   , Array.prototype.slice.call(arguments))
             },
             mapReduce: function () {
-                return mongoSitesApi._call('_mapReduce', Array.prototype.slice.call(arguments))
+                return Just._call('_mapReduce', Array.prototype.slice.call(arguments))
             },
             remove: function (query) {
                 if(JSON.stringify(query) == '{}' && !confirm("Are you really want to delete elements by empty query '{}' ?")) {
                     return new Promise(function(resolve, reject) { reject('Deleting empty array not confirmed by user') });
                 }
-                return mongoSitesApi._call('_remove'   , Array.prototype.slice.call(arguments))
+                return Just._call('_remove'   , Array.prototype.slice.call(arguments))
             }
         },
         listObjectTypes: function () {
@@ -186,7 +187,7 @@ mongoSitesApi = (function() {
         /** @method Save object and return it in callback (with updated timestamp). Insert action report to log. */
         save: function (object) {
             return new Promise(function (resolve, reject) {
-                mongoSitesApi._call('save', [object]).then(function (data) {
+                Just._call('save', [object]).then(function (data) {
                     var i;
                     for (i in data) {
                         if (data.hasOwnProperty(i)) {
@@ -245,7 +246,7 @@ mongoSitesApi = (function() {
         graph_search: function (query, projection, options) {
             var args = Array.prototype.slice.call(arguments);
             return new Promise(function (resolve, reject) {
-                mongoSitesApi._call('graph_search', args).then(function (response) {
+                Just._call('graph_search', args).then(function (response) {
                     var links = response[0];
                     var _id2object = response[1];
                     links.map(function (link) {
@@ -315,7 +316,7 @@ mongoSitesApi = (function() {
   var setTimeoutFunc = setTimeout;
 
   function noop() {}
-  
+
   // Polyfill for Function.prototype.bind
   function bind(fn, thisArg) {
     return function () {
@@ -533,7 +534,7 @@ mongoSitesApi = (function() {
   Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
     Promise._unhandledRejectionFn = fn;
   };
-  
+
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = Promise;
   } else if (!root.Promise) {

@@ -2,10 +2,10 @@ FROM ubuntu:16.04
 
 ENV PORT=80 \
     PRODUCTION=1 \
-    MSA_SITE_NAME=msa \
-    MSA_FREE_REGISTER=true \
-    MSA_ADMIN_EMAIL=admin@msa.com \
-    MSA_ADMIN_PASSWORD=admin
+    JUST_SITE_NAME=just \
+    JUST_FREE_REGISTER=true \
+    JUST_ADMIN_EMAIL=admin@just.extremeprog.com \
+    JUST_ADMIN_PASSWORD=admin
 
 VOLUME /var/lib/mongodb
 
@@ -15,12 +15,12 @@ RUN apt-get update && \
 
 RUN npm install -g gulp
 
-RUN mkdir -p /root/mongo-sites-api
-COPY package.json /root/mongo-sites-api/package.json
+RUN mkdir -p /root/just
+COPY package.json /root/just/package.json
 
-WORKDIR /root/mongo-sites-api
+WORKDIR /root/just
 RUN bash -c 'npm update || echo'
-COPY . /root/mongo-sites-api
+COPY . /root/just
 RUN gulp
 
-CMD ["bash", "/root/mongo-sites-api/run_app.sh"]
+CMD ["bash", "/root/just/run_app.sh"]

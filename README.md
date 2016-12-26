@@ -36,7 +36,7 @@ Intall a Docker container on your server.
 
 ```
 $ docker run -d -it --restart=always --name=just \
- -v /var/lib/mongo-sites-api/mongodb:/var/lib/mongodb \
+ -v /var/lib/just/mongodb:/var/lib/mongodb \
  -p 8080:80 extremeprog/just:latest
 ```
 

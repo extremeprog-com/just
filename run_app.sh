@@ -14,15 +14,15 @@ if [ ! "$MONGO_URL" ]; then
     done
 fi
 
-perl -pi -e 's/{site_name}/'`echo $MSA_SITE_NAME`'/g' mgosites-admin/index.html
+perl -pi -e 's/{site_name}/'`echo $JUST_SITE_NAME`'/g' mgosites-admin/index.html
 
-if [ -z "$MSA_SITE_NAME" ]; then
-    ./prepare_site --site-name=$MSA_SITE_NAME --domain-name=$MSA_DOMAIN_NAME --free-register=$MSA_FREE_REGISTER
+if [ -z "$JUST_SITE_NAME" ]; then
+    ./prepare_site --site-name=$JUST_SITE_NAME --domain-name=$JUST_DOMAIN_NAME --free-register=$JUST_FREE_REGISTER
 fi
 
-if [[ -z "$MSA_ADMIN_EMAIL" ]] && [[ -z "$MSA_ADMIN_PASSWORD" ]] && [[ -z "$MSA_SITE_NAME" ]]; then
-    node msa-config-layer/add_admin_user.js --email=$MSA_ADMIN_EMAIL --password=$MSA_ADMIN_PASSWORD --site-name=$MSA_SITE_NAME
+if [[ -z "$JUST_ADMIN_EMAIL" ]] && [[ -z "$JUST_ADMIN_PASSWORD" ]] && [[ -z "$JUST_SITE_NAME" ]]; then
+    node just-config-layer/add_admin_user.js --email=$JUST_ADMIN_EMAIL --password=$JUST_ADMIN_PASSWORD --site-name=$JUST_SITE_NAME
 fi
 
 cd /root/mongo-sites-api/
-node msa-http-layer/server.js
+node just-http-layer/server.js

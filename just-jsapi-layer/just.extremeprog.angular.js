@@ -1,12 +1,14 @@
 /**
- * AngularJS Module for MongoSitesAPI
- * @license MongoSitesAPI v0.7.0
- * (c) 2015-2016 extremeprog.com https://github.com/extremeprog-com/mongo-sites-api
+ * AngularJS Module for Just
+ *
+ * @license Just v0.7.0
+ *
+ * (c) 2015-2016 extremeprog.com https://github.com/extremeprog-com/just
  * License: MIT
  */
 
-angular.module('mongoSitesApi', [])
-    .service('$mongoSitesApi', function() {
+angular.module('just', [])
+    .service('$just', function() {
 
         var res = {};
 
@@ -68,7 +70,7 @@ angular.module('mongoSitesApi', [])
                     }
                 }
             }
-        })(mongoSitesApi, res);
+        })(Just, res);
 
         function handleDataForMethod(method, data, object) {
             switch (method) {
@@ -93,7 +95,7 @@ angular.module('mongoSitesApi', [])
 
         return res
     })
-    .directive('msaLoad', function () {
+    .directive('justLoad', function () {
 
         function iterate(object, cb, additional_param) {
             if(typeof object == 'object') {
@@ -111,12 +113,12 @@ angular.module('mongoSitesApi', [])
 
                 var wait_promises = {};
 
-                (attr.msaLoad.match(/[a-z_$0-9]+(([ \t\r\n]*)\.([ \t\n]*)([a-z_$0-9]+))*([ \t\r\n]*)=/img) || []).map(function(it) {
+                (attr.justLoad.match(/[a-z_$0-9]+(([ \t\r\n]*)\.([ \t\n]*)([a-z_$0-9]+))*([ \t\r\n]*)=/img) || []).map(function(it) {
                     var cursor = wait_promises;
                     it.replace(/[ \n\r\t=]+/g,'').split(/\./).map(function(it) { if(!cursor[it]) { cursor[it] = {} } cursor = cursor[it] })
                 });
 
-                (new Function('scope', 'wait_promises', 'with(mongoSitesApi) { with(scope) { with(wait_promises) { ' + attr.msaLoad + ' } } }'))(scope, wait_promises);
+                (new Function('scope', 'wait_promises', 'with(Just) { with(scope) { with(wait_promises) { ' + attr.justLoad + ' } } }'))(scope, wait_promises);
 
                 // create or load right scope object and hack to fix placing msa_* into different scopes
                 scope.msa_loaded = scope.msa_loaded || scope.$parent.msa_loaded || {};

@@ -1,6 +1,6 @@
-mgoAdmin.controller('mgoAdminInit', function ($scope, $state, $mongoSitesApi) {
+mgoAdmin.controller('mgoAdminInit', function ($scope, $state, $just) {
     setTimeout(function() {
-        $mongoSitesApi.auth_check()
+        $just.auth_check()
             .then(function(logged_in) {
                 if (!logged_in) {
                     $state.go('login');

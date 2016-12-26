@@ -147,7 +147,7 @@ restart_server = function() {
 start_server = function(cb) {
     //log_resource('trying to start', 'server');
     server_process = require('child_process').spawn(
-        'node', ['msa-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, DEFAULT_ADMIN: admin.email, MONGO_URL: mongo_url } }
+        'node', ['just-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, DEFAULT_ADMIN: admin.email, MONGO_URL: mongo_url } }
     );
     server_process.stdout.on('data', function(chunk) {
         log_resource(chunk.toString(), "server's stdout");
@@ -184,7 +184,7 @@ process.on('exit', function() {
 before(function(done) {
     //log_resource('trying to start', 'server');
     server_process = require('child_process').spawn(
-        'node', ['msa-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, DEFAULT_ADMIN: admin.email, MONGO_URL: mongo_url } }
+        'node', ['just-http-layer/server.js'], { env: { TEST_ENV: 'DEV_TEST', PATH: process.env.PATH, PORT: server_port, DEFAULT_ADMIN: admin.email, MONGO_URL: mongo_url } }
     );
     server_process.stdout.on('data', function(chunk) {
         log_resource(chunk.toString(), "server's stdout");
