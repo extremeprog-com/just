@@ -1,8 +1,7 @@
 FROM ubuntu:16.04
 
 ENV PORT=80 \
-  PRODUCTION=1 \
-  JUST_SITE_NAME=default
+  PRODUCTION=1
 
 VOLUME /var/lib/mongodb
 
