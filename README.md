@@ -58,12 +58,12 @@ For an advanced configuration proceed with this wiki ... .
 
 #### Get data
 ```
-mongoSitesApi.mgoInterface.find({_type: 'Fruit'})
+Just.mgoInterface.find({_type: 'Fruit'})
 ```
 
 #### Write data
 ```
-mongoSitesApi.mgoInterface.save({_type: 'Fruit', name: 'Banana'})
+Just.mgoInterface.save({_type: 'Fruit', name: 'Banana'})
 ```
 
 

@@ -14,15 +14,24 @@ if [ ! "$MONGO_URL" ]; then
     done
 fi
 
+# Set env variables if they are not set for further work
+if [ -z "$JUST_SITE_NAME" ]; then
+    export JUST_SITE_NAME="default"
+fi
+
+if [[ -z "$JUST_ADMIN_EMAIL" ]]; then
+    export JUST_ADMIN_EMAIL="admin@just.extremeprog.com"
+fi
+
+if [[ -z "$JUST_ADMIN_PASSWORD" ]]; then
+    export JUST_ADMIN_PASSWORD="admin"
+fi
+
 perl -pi -e 's/{site_name}/'`echo $JUST_SITE_NAME`'/g' mgosites-admin/index.html
 
-if [ -z "$JUST_SITE_NAME" ]; then
-    ./prepare_site --site-name=$JUST_SITE_NAME --domain-name=$JUST_DOMAIN_NAME --free-register=$JUST_FREE_REGISTER
-fi
+# Initialization for a site and an admin
+./prepare_site --site-name=$JUST_SITE_NAME --domain-name=$JUST_DOMAIN_NAME --free-register=true
+node just-config-layer/add_admin_user.js --email=$JUST_ADMIN_EMAIL --password=$JUST_ADMIN_PASSWORD --site-name=$JUST_SITE_NAME
 
-if [[ -z "$JUST_ADMIN_EMAIL" ]] && [[ -z "$JUST_ADMIN_PASSWORD" ]] && [[ -z "$JUST_SITE_NAME" ]]; then
-    node just-config-layer/add_admin_user.js --email=$JUST_ADMIN_EMAIL --password=$JUST_ADMIN_PASSWORD --site-name=$JUST_SITE_NAME
-fi
-
-cd /root/mongo-sites-api/
+cd /root/just/
 node just-http-layer/server.js
