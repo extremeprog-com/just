@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:url" content="/docs/install.html" />
+    <meta property="og:site_name" content="Just"/>
+    <meta property="og:title" content="Installation" />
+    <meta property="og:image" content="/docs/static/og_image.png" />
+    <meta property="og:description" content="" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/github-light.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+
+    <link rel="icon" href="static/favicon.png" type="image/x-icon">
+
+    <base href="/docs/" />
+
+    <title>Just Auth Component</title>
+    <meta name="description" content="">
+
+    <link rel="canonical" href="/docs/auth.html">
+</head>
+<body>
+<div class="page-menu">
+    <div class="page-menu-item"><a>Just</a></div>
+    <div class="page-menu-item"><a>Docs</a></div>
+    <div class="page-menu-item"><a>Support</a></div>
+</div>
+
+<section class="main-content">
+    <div class="main-content-menu">
+        <div class="main-content-menu-data">
+            <div class="menu-data-group">
+                <h3 class="menu-group-title">Components</h3>
+
+                <ul class="menu-group-list">
+                    <li><a href="/docs/auth.html">Auth</a></li>
+                    <li><a>Mongo Interface</a></li>
+                    <li><a>Plugins</a></li>
+                    <li><a>Snapshots</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="main-content-wrapper">
+        <p>Git Proxy exists to organize a painful and secure access to private repos for automation services like
+            Rancher, Jenkins, TeamCity, etc. <a href="https://github.com/extremeprog-com/git-proxy">View on Github</a></p>
+
+        <h3>
+            <a id="creating-pages-manually" class="anchor" href="#creating-pages-manually" aria-hidden="true"><span
+                aria-hidden="true" class="octicon octicon-link"></span></a>Quickstart</h3>
+
+        <p>You can install Git Proxy using Docker container <code>extremeprog/git-proxy</code>.
+            When running container specify a private key to access to repo.
+            Public key should be added to those services which you want to provide access to.
+            We recommend to create an additional pair for these purposes.</p>
+        <p>
+            <code>
+                $ docker run -d -it --restart=always --name=git-proxy \
+                -e PRIVATE_KEY="..." extremeprog/git-proxy
+            </code>
+        </p>
+
+        <h3>
+            <a id="creating" class="anchor" href="#creating-pages-manually" aria-hidden="true"><span
+                aria-hidden="true" class="octicon octicon-link"></span></a>For Rancher-based services</h3>
+
+        <p>If you use Rancher you can install Git Proxy service over our <a href="https://github.com/extremeprog-com/rancher-catalog">extremeprog custom cattle</a>
+            (until it is not added to the main Rancher cattle).
+            Within Rancher you can use it for connecting private cattles and installing services from your private repos.
+        </p>
+
+    </div>
+
+
+    <footer class="site-footer">
+        <span class="site-footer-owner">Friend Inc IT Lab <a
+            href="https://github.com/extremeprog-com">extremeprog-com</a>.</span>
+    </footer>
+
+</section>
+
+
+</body>
