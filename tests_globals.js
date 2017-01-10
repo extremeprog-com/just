@@ -116,7 +116,7 @@ api_post = function(url, data, cb) {
     }
     log_resource(url + ' data ' + JSON.stringify(data), "request POST ");
     request.post({url: url, json: true, headers: headers, jar : jar || request.jar(), body: data }, function(err, res, body) {
-        log_resource(body, "response for POST " + url + ' data ' + JSON.stringify(data) + ' is ' + res.statusCode);
+        res && log_resource(body, "response for POST " + url + ' data ' + JSON.stringify(data) + ' is ' + res.statusCode);
         cb(err, res, body);
     })
 };

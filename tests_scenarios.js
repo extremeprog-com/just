@@ -130,7 +130,7 @@ module.exports = {
         "Component: Content": {
             "Attribute: Functional": {
                 "user should be able to get script files": [
-                    "unit just-http-layer/_tests/content.functional.get_script_files: get mongoSitesApi.js, get mongoSitesApi.angular.js"
+                    "unit just-http-layer/_tests/content.functional.get_script_files: get just.extremeprog.js, get just.extremeprog.angular.js"
                 ]
             }
         }

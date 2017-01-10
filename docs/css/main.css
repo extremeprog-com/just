@@ -283,6 +283,14 @@ a:hover {
     }
 }
 
+.markdown-body strong {
+    font-family: 'Work Sans', Helvetica, sans-serif;
+    background-color: white;
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #020100;
+}
+
 .main-content-wrapper {
     background: #fff;
     padding: 2vw 3vw 2vh;

@@ -58,7 +58,9 @@
             <h2>Auth User Guide</h2>
             <p><strong>mongoSitesApi.auth(login, password)</strong></p>
             <hr>
-            <p>Authorizes the user at the system. Returns Promise object.</p>
+            <p>Authorizes the user at the system. Returns a Promise object that will be resolved into
+                an array with an error and an object which contains a current site name and an active session identifier.</p>
+            <p>Params: <code>login</code> and <code>password</code> of the user.</p>
             <div class="highlight highlight-source-js"><pre>mongoSitesApi
     .<span class="pl-en">auth</span>(<span class="pl-s"><span class="pl-pds">"</span>user@msa.com<span
                     class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>sdfj38D$hd<span
@@ -69,26 +71,29 @@
             </div>
 
             <p><strong>mongoSitesApi.auth_register(params)</strong></p>
-
             <hr>
-
-            <p>Registers a new user at the system. <strong>params</strong> is an object with user details and auth data.
-                Returns Promise object.</p>
-
+            <p>Registers a new user at the system. Returns a Promise object that will be resolved into
+                an array with an error and an object which contains an activation link and mail options that have been sent to the user email for the activation.</p>
+            <p>Params: an object with user details including mandatory fields <code>_id</code> and <code>password</code>.</p>
             <div class="highlight highlight-source-js"><pre>mongoSitesApi
-    .<span class="pl-en">auth_register</span>({email<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>new_user@msa.com<span
+    .<span class="pl-en">auth_register</span>({_id:<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>new_user@msa.com<span
                     class="pl-pds">"</span></span>, password<span class="pl-k">:</span> <span class="pl-s"><span
                     class="pl-pds">"</span>mgJ8$fgG<span class="pl-pds">"</span></span>})
     .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
         <span class="pl-c"><span class="pl-c">//</span> your code here</span>
     })</pre>
+
+                <p>The activation link already contains all necessary infogration for activating the user account. Once user procceeds with the link
+                    he is being registered at the system.
+                </p>
             </div>
 
             <p><strong>mongoSitesApi.auth_users()</strong></p>
 
             <hr>
 
-            <p>Retrieves all users of the system. Returns Promise object.</p>
+            <p>Retrieves all users of the system. Returns a Promise object that will be resolved into an array
+                with an error and an array with users objects.</p>
 
             <div class="highlight highlight-source-js"><pre>mongoSitesApi
     .<span class="pl-en">auth_users</span>()
@@ -101,7 +106,8 @@
 
             <hr>
 
-            <p>Checks if the user is logged in the system. Returns Promise object.</p>
+            <p>Checks if a user is logged-in at the system. Returns a Promise object that will be resolved into an array
+                with an error and a boolean.</p>
 
             <div class="highlight highlight-source-js"><pre>mongoSitesApi
     .<span class="pl-en">auth_check</span>()
@@ -114,7 +120,8 @@
 
             <hr>
 
-            <p>Unauthorizes the user at the system. Returns Promise object.</p>
+            <p>Logout the user at the system. Returns a Promise object that will be resolved into an array
+                with an error and a boolean.</p>
 
             <div class="highlight highlight-source-js"><pre>mongoSitesApi
     .<span class="pl-en">auth_logout</span>()

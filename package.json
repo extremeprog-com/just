@@ -1,5 +1,5 @@
 {
-  "name": "mongo-sites-api",
+  "name": "just",
   "version": "0.7.0",
   "description": "",
   "main": "just-http-layer/server.js",
@@ -45,5 +45,5 @@
     "socket.io": "^1.4.8"
   },
   "devDependencies": {},
-  "license": "BSD-2-Clause"
+  "license": "MIT"
 }
