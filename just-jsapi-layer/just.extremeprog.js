@@ -1,11 +1,11 @@
 /**
- * @license Just v0.7.0
+ * @license just v0.7.0
  *
  * (c) 2015-2016 extremeprog.com https://github.com/extremeprog-com/just
  * License: MIT
  */
 
-Just = (function() {
+just = (function() {
 
     function _hmap(object, fn) {
         var dest = {};
@@ -61,7 +61,7 @@ Just = (function() {
                                 resolve(response[1]);
                             } else {
                                 reject(response[0]);
-                                //throw new Error('Just error during ' + method + '(): ' + JSON.stringify(response[0]));
+                                //throw new Error('just error during ' + method + '(): ' + JSON.stringify(response[0]));
                             }
                         } else {
                             reject()
@@ -87,28 +87,28 @@ Just = (function() {
         },
         mgoInterface: {
             find: function () {
-                return Just._call('_find'     , Array.prototype.slice.call(arguments))
+                return just._call('_find'     , Array.prototype.slice.call(arguments))
             },
             findOne: function () {
-                return Just._call('_findOne'  , Array.prototype.slice.call(arguments))
+                return just._call('_findOne'  , Array.prototype.slice.call(arguments))
             },
             aggregate: function () {
-                return Just._call('_aggregate', Array.prototype.slice.call(arguments))
+                return just._call('_aggregate', Array.prototype.slice.call(arguments))
             },
             insert: function () {
-                return Just._call('_insert'   , Array.prototype.slice.call(arguments))
+                return just._call('_insert'   , Array.prototype.slice.call(arguments))
             },
             update: function () {
-                return Just._call('_update'   , Array.prototype.slice.call(arguments))
+                return just._call('_update'   , Array.prototype.slice.call(arguments))
             },
             mapReduce: function () {
-                return Just._call('_mapReduce', Array.prototype.slice.call(arguments))
+                return just._call('_mapReduce', Array.prototype.slice.call(arguments))
             },
             remove: function (query) {
                 if(JSON.stringify(query) == '{}' && !confirm("Are you really want to delete elements by empty query '{}' ?")) {
                     return new Promise(function(resolve, reject) { reject('Deleting empty array not confirmed by user') });
                 }
-                return Just._call('_remove'   , Array.prototype.slice.call(arguments))
+                return just._call('_remove'   , Array.prototype.slice.call(arguments))
             }
         },
         listObjectTypes: function () {
@@ -187,7 +187,7 @@ Just = (function() {
         /** @method Save object and return it in callback (with updated timestamp). Insert action report to log. */
         save: function (object) {
             return new Promise(function (resolve, reject) {
-                Just._call('save', [object]).then(function (data) {
+                just._call('save', [object]).then(function (data) {
                     var i;
                     for (i in data) {
                         if (data.hasOwnProperty(i)) {
@@ -246,7 +246,7 @@ Just = (function() {
         graph_search: function (query, projection, options) {
             var args = Array.prototype.slice.call(arguments);
             return new Promise(function (resolve, reject) {
-                Just._call('graph_search', args).then(function (response) {
+                just._call('graph_search', args).then(function (response) {
                     var links = response[0];
                     var _id2object = response[1];
                     links.map(function (link) {

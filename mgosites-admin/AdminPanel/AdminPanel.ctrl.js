@@ -83,7 +83,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $just, $state) {
     };
 
     $scope.runRequest = function () {
-        $scope.state.command.replace('Just', '$just');
+        $scope.state.command.replace('just', '$just');
         $scope.state.objects = null;
         $scope.objects = null;
         var promise;
@@ -102,7 +102,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $just, $state) {
 
         switch (dT) {
             case "Users":
-                $scope.state.command = 'Just.auth_users()';
+                $scope.state.command = 'just.auth_users()';
                 break;
             default:
                 var request = [{_type: dT}, {limit: 100}];
@@ -110,7 +110,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $just, $state) {
                     console.log(objectRestrictions[dT].readFilter);
                     angular.merge(request[0], objectRestrictions[dT].readFilter);
                 }
-                $scope.state.command = 'Just.mgoInterface.find(' + request.map(JSON.stringify).join(", ") + ')';
+                $scope.state.command = 'just.mgoInterface.find(' + request.map(JSON.stringify).join(", ") + ')';
                 break;
         }
         $scope.runRequest();

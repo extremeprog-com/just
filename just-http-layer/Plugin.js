@@ -18,19 +18,13 @@ classes.Plugin = {
         return function (success, fail) {
             app.post('/api/plugins/save', app.parser(function (site, data, cb, user, res, req) {
 
-                console.log('asasdasdas');
-
                 if (!user) {
                     res.status(403);
                     cb(['Authorization required']);
                     return;
                 }
 
-                console.log(123);
-
                 var data = data[0];
-
-
 
                 data._modified = parseInt(new Date() / 1000);
 

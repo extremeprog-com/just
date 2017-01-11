@@ -27,7 +27,7 @@ a:hover {
     border-color: rgb(255, 192, 66);
     border-style: solid;
     border-width: 2px;
-    border-radius: 0;
+    border-radius: 5px;
     transition: color 150ms, background-color 150ms, border-color 175ms; }
 .btn + .btn {
     margin-left: 1rem; }
@@ -77,12 +77,11 @@ a:hover {
 .project-name {
     margin-top: 0;
     font-size: 3rem;
-    font-family: 'VT323', monospace;
     margin-bottom: 0.1rem; }
 
 @media screen and (min-width: 64em) {
     .project-name {
-        font-size: 5.25rem; } }
+        font-size: 3.25rem; } }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
     .project-name {
@@ -91,6 +90,10 @@ a:hover {
 @media screen and (max-width: 42em) {
     .project-name {
         font-size: 1.75rem; } }
+
+.project-name-point {
+    color: rgb(255, 192, 66);
+    font-family: 'Work Sans', sans-serif; }
 
 .project-tagline {
     margin-bottom: 6rem;
@@ -265,7 +268,9 @@ a:hover {
 
 .page-menu { font-family: 'Work Sans', Helvetica, sans-serif; background: #020100; height: 50px; position: fixed; z-index: 100; width: 100%;}
 .page-menu-item { display: inline-block; font-size: 18px; padding: 0 40px 0 0; height: inherit; }
+.page-menu-item.active::before { content: '•'; position: absolute; margin-left: -20px; color: rgb(255, 192, 66); font-size: 2rem; }
 .page-menu-item a { color: white; text-decoration: none; border: none; display: block; height: inherit; line-height: 47px; }
+.page-menu-item:hover a { background: transparent; }
 
 
 @media only screen and (min-width: 1024px) {

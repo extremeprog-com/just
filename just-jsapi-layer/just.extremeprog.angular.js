@@ -70,7 +70,7 @@ angular.module('just', [])
                     }
                 }
             }
-        })(Just, res);
+        })(just, res);
 
         function handleDataForMethod(method, data, object) {
             switch (method) {
@@ -118,7 +118,7 @@ angular.module('just', [])
                     it.replace(/[ \n\r\t=]+/g,'').split(/\./).map(function(it) { if(!cursor[it]) { cursor[it] = {} } cursor = cursor[it] })
                 });
 
-                (new Function('scope', 'wait_promises', 'with(Just) { with(scope) { with(wait_promises) { ' + attr.justLoad + ' } } }'))(scope, wait_promises);
+                (new Function('scope', 'wait_promises', 'with(just) { with(scope) { with(wait_promises) { ' + attr.justLoad + ' } } }'))(scope, wait_promises);
 
                 // create or load right scope object and hack to fix placing msa_* into different scopes
                 scope.msa_loaded = scope.msa_loaded || scope.$parent.msa_loaded || {};

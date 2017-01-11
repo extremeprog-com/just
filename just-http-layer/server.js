@@ -37,20 +37,15 @@ if (!process.env.PRODUCTION) {
 }
 
 var mongodb = require('mongodb');
-
-var crypto = require('crypto');
-
 var mongoClient = mongodb.MongoClient;
 var db;
 var io;
 
 fs = require('fs');
 
-var mongoApiFile;
 var sitesCollection;
 
 classes = {};
-
 
 require('./Auth.js');
 require('./Plugin.js');
@@ -275,7 +270,6 @@ function parser(data_handle, custom_handle) {
                                 (function substituteSpecialValues(field, cursor) {
                                     switch (true) {
                                         case typeof cursor == 'string' && /* field.match(/_id$/) && */ !!String.prototype.match.call(cursor, /^[0-9a-f]{24}$/):
-                                            console.log(cursor);
                                             return mongodb.ObjectId(cursor);
 
                                         case typeof cursor != 'object' || cursor === null:

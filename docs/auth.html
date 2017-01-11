@@ -30,7 +30,7 @@
 <body>
 <div class="page-menu">
     <div class="page-menu-item"><a>Just</a></div>
-    <div class="page-menu-item"><a>Docs</a></div>
+    <div class="page-menu-item active"><a>Docs</a></div>
     <div class="page-menu-item"><a>Support</a></div>
 </div>
 
@@ -56,12 +56,12 @@
             <p>MSA has it's own auth module that can be used for managing users. All users objects are stored in the
                 <code>site-{site_name}-users</code> collection.</p>
             <h2>Auth User Guide</h2>
-            <p><strong>mongoSitesApi.auth(login, password)</strong></p>
+            <p><strong>just.auth(login, password)</strong></p>
             <hr>
             <p>Authorizes the user at the system. Returns a Promise object that will be resolved into
                 an array with an error and an object which contains a current site name and an active session identifier.</p>
             <p>Params: <code>login</code> and <code>password</code> of the user.</p>
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth</span>(<span class="pl-s"><span class="pl-pds">"</span>user@msa.com<span
                     class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>sdfj38D$hd<span
                     class="pl-pds">"</span></span>)
@@ -70,12 +70,12 @@
     })</pre>
             </div>
 
-            <p><strong>mongoSitesApi.auth_register(params)</strong></p>
+            <p><strong>just.auth_register(params)</strong></p>
             <hr>
             <p>Registers a new user at the system. Returns a Promise object that will be resolved into
                 an array with an error and an object which contains an activation link and mail options that have been sent to the user email for the activation.</p>
             <p>Params: an object with user details including mandatory fields <code>_id</code> and <code>password</code>.</p>
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_register</span>({_id:<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>new_user@msa.com<span
                     class="pl-pds">"</span></span>, password<span class="pl-k">:</span> <span class="pl-s"><span
                     class="pl-pds">"</span>mgJ8$fgG<span class="pl-pds">"</span></span>})
@@ -88,69 +88,69 @@
                 </p>
             </div>
 
-            <p><strong>mongoSitesApi.auth_users()</strong></p>
+            <p><strong>just.auth_users()</strong></p>
 
             <hr>
 
             <p>Retrieves all users of the system. Returns a Promise object that will be resolved into an array
                 with an error and an array with users objects.</p>
 
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_users</span>()
     .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
         <span class="pl-c"><span class="pl-c">//</span> your code here</span>
     })</pre>
             </div>
 
-            <p><strong>mongoSitesApi.auth_check()</strong></p>
+            <p><strong>just.auth_check()</strong></p>
 
             <hr>
 
             <p>Checks if a user is logged-in at the system. Returns a Promise object that will be resolved into an array
                 with an error and a boolean.</p>
 
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_check</span>()
     .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
         <span class="pl-c"><span class="pl-c">//</span> your code here</span>
     })</pre>
             </div>
 
-            <p><strong>mongoSitesApi.auth_logout()</strong></p>
+            <p><strong>just.auth_logout()</strong></p>
 
             <hr>
 
             <p>Logout the user at the system. Returns a Promise object that will be resolved into an array
                 with an error and a boolean.</p>
 
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_logout</span>()
     .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
         <span class="pl-c"><span class="pl-c">//</span> your code here</span>
     })</pre>
             </div>
 
-            <p><strong>mongoSitesApi.auth_update(params)</strong></p>
+            <p><strong>just.auth_update(params)</strong></p>
 
             <hr>
 
             <p>Updates a user data. Accepts an object with user data to be updated. Returns Promise object.</p>
 
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_update</span>()
     .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
         <span class="pl-c"><span class="pl-c">//</span> your code here</span>
     })</pre>
             </div>
 
-            <p><strong>mongoSitesApi.auth_change_password(params)</strong></p>
+            <p><strong>just.auth_change_password(params)</strong></p>
 
             <hr>
 
             <p>Updates a password of a user. <strong>params</strong> is an object with <em>new_password</em> and <em>old_password</em>
                 keys. Returns Promise object.</p>
 
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_change_password</span>({ old_password<span class="pl-k">:</span> <span class="pl-s"><span
                     class="pl-pds">'</span>ksdfhf8jsd7H<span class="pl-pds">'</span></span>, new_password<span
                     class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>fhs6H*Rhh$k<span
@@ -160,14 +160,14 @@
     })</pre>
             </div>
 
-            <p><strong>mongoSitesApi.auth_delete(login || [login1, login2, ...])</strong></p>
+            <p><strong>just.auth_delete(login || [login1, login2, ...])</strong></p>
 
             <hr>
 
             <p>Removes a user or a group of users from the system. Accepts a login string or an array of logins. Returns
                 Promise object.</p>
 
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_delete</span>([<span class="pl-s"><span class="pl-pds">"</span>user1@msa.com<span
                     class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>user2@msa.com<span
                     class="pl-pds">"</span></span>])
@@ -178,14 +178,14 @@
 
             <h3>Resetting Password Process</h3>
 
-            <p><strong>mongoSitesApi.auth_request_reset_password(params)</strong></p>
+            <p><strong>just.auth_request_reset_password(params)</strong></p>
 
             <hr>
 
             <p>Performs request for reseting password. <strong>params</strong> is an object that contains User Id.
                 Returns Promise object.</p>
 
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_request_reset_password</span>({_id<span class="pl-k">:</span> <span
                     class="pl-smi">User</span>.<span class="pl-smi">_id</span>})
     .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
@@ -193,14 +193,14 @@
     })</pre>
             </div>
 
-            <p><strong>mongoSitesApi.auth_reset_password(params, reset_token)</strong></p>
+            <p><strong>just.auth_reset_password(params, reset_token)</strong></p>
 
             <hr>
 
             <p>Resets password of the user. params is an object that contains new password. reset_token is a token that
                 gets from user email link (more information about link read below). Returns Promise object.</p>
 
-            <div class="highlight highlight-source-js"><pre>mongoSitesApi
+            <div class="highlight highlight-source-js"><pre>just
     .<span class="pl-en">auth_reset_password</span>({password<span class="pl-k">:</span> <span class="pl-s"><span
                     class="pl-pds">'</span>sjd84vbK&amp;j<span class="pl-pds">'</span></span>}, <span class="pl-s"><span
                     class="pl-pds">'</span>caerpq847bc9uerghjse4j3htaoi7ury<span class="pl-pds">'</span></span>)

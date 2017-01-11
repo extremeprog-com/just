@@ -60,12 +60,12 @@ Use admin@just.extremeprog.com/admin credentials to login and view data as an ad
 
 #### Get data
 ```
-Just.mgoInterface.find({_type: 'Fruit'})
+just.mgoInterface.find({_type: 'Fruit'})
 ```
 
 #### Write data
 ```
-Just.mgoInterface.save({_type: 'Fruit', name: 'Banana'})
+just.mgoInterface.save({_type: 'Fruit', name: 'Banana'})
 ```
 
 
