@@ -1,4 +1,4 @@
-mgoAdmin.controller('mgoAdminLogin', function($scope, $mongoSitesApi, $state) {
+mgoAdmin.controller('mgoAdminLogin', function($scope, $just, $state) {
     $scope.state = {
           login: localStorage.email || ''
         , password: ''
@@ -13,7 +13,7 @@ mgoAdmin.controller('mgoAdminLogin', function($scope, $mongoSitesApi, $state) {
             return;
         }
 
-        $mongoSitesApi.auth($scope.state.login, $scope.state.password).then(
+        $just.auth($scope.state.login, $scope.state.password).then(
             function(data) {
                 if(data.token) $state.go('init');
             },

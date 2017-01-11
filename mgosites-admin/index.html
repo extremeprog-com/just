@@ -2,14 +2,17 @@
 <html ng-app="mgoAdmin">
     <head>
         <meta charset="utf-8" />
+
+        <title>Just Admin Pages</title>
+
         <link rel="stylesheet" href="/mgosites-admin/style.css" />
         <script src="/socket.io/socket.io.js"></script>
 
         <script>
-            document.write('\<script src="/mongoSitesApi.js?site=' + ( location.search.match(/[?&]site=([^&]+)/) ? location.search.match(/[?&]site=([^&]+)/)[1] : '{site_name}' ) + '"><\/script>')
+            document.write('\<script src="/just.extremeprog.js?site=' + ( location.search.match(/[?&]site=([^&]+)/) ? location.search.match(/[?&]site=([^&]+)/)[1] : '{site_name}' ) + '"><\/script>')
         </script>
         <script src="/mgosites-admin/build/app.js"></script>
-        <script src="/mongoSitesApi.angular.js"></script>
+        <script src="/just.extremeprog.angular.js"></script>
         <script src="/mgosites-admin/ngTemplateFromVar.directive.js"></script>
         <script src="/mgosites-admin/ngModelJson.directive.js"></script>
 

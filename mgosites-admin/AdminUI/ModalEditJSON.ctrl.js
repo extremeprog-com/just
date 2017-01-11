@@ -1,4 +1,4 @@
-mgoAdmin.controller('ModelEditJSON', function($scope, $mongoSitesApi) {
+mgoAdmin.controller('ModelEditJSON', function($scope, $just) {
 
     $scope.JSON = JSON;
 
@@ -50,7 +50,7 @@ mgoAdmin.controller('ModelEditJSON', function($scope, $mongoSitesApi) {
         var type = $scope.state.activeDataType;
         console.log(type);
         if(type) {
-            $mongoSitesApi.mgoInterface
+            $just.mgoInterface
                 .aggregate([
                     { "$match": { "_type": "Plugin" } },
                     { "$unwind": "$editTemplates" },
@@ -93,14 +93,14 @@ mgoAdmin.controller('ModelEditJSON', function($scope, $mongoSitesApi) {
         $scope.state.loading = true;
 
         if (json._type) {
-            $mongoSitesApi.save(json).then(function () {
+            $just.save(json).then(function () {
                 $scope.state.loading = false;
                 $scope.handleCloseEditor();
                 $scope.loadDataTypes();
                 $scope.runRequest();
             });
         } else {
-            $mongoSitesApi.auth_update(json).then(function () {
+            $just.auth_update(json).then(function () {
                 $scope.state.loading = false;
                 $scope.handleCloseEditor();
                 $scope.runRequest();
@@ -113,12 +113,12 @@ mgoAdmin.controller('ModelEditJSON', function($scope, $mongoSitesApi) {
 
         confirm("Are you sure want delete it?") &&
         ($scope.state.activeDataType === 'Users' ?
-            $mongoSitesApi.auth_delete(JSON.parse($scope.state.codeToEdit)._id).then(function () {
+                $just.auth_delete(JSON.parse($scope.state.codeToEdit)._id).then(function () {
                 $scope.state.loading = false;
                 $scope.handleCloseEditor();
                 $scope.runRequest();
             }) :
-            $mongoSitesApi.mgoInterface.remove({_id: JSON.parse($scope.state.codeToEdit)._id}).then(function () {
+                $just.mgoInterface.remove({_id: JSON.parse($scope.state.codeToEdit)._id}).then(function () {
                 $scope.state.loading = false;
                 $scope.handleCloseEditor();
                 $scope.runRequest();
@@ -126,13 +126,13 @@ mgoAdmin.controller('ModelEditJSON', function($scope, $mongoSitesApi) {
             })
         );
     };
-    
+
     $scope.handleKeyPress = function(e) {
         console.log(e);
         if(e.code === 'Tab') {
             e.preventDefault();
-            
-            var 
+
+            var
                   start = e.target.selectionStart
                 , code  = e.target.value;
 

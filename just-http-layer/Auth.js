@@ -50,7 +50,7 @@ classes.Auth = {
                             });
                         } else {
                             res.status(400);
-                            cb('Login and password does not match');
+                            cb(['Login and password does not match']);
                         }
                     }
                 });
@@ -64,6 +64,7 @@ classes.Auth = {
                     res.send([null, true]);
                     return
                 }
+
                 collectionUsers.update({_id: user._id}, {$pullAll: {"active_sessions": [ req.query.token || req.cookies[site._id + ':_auth'] ]}}, function (err, response) {
                     res.cookie(site._id + ':_auth', '  ', {maxAge: - 365 * 24 * 3600 * 1000});
                     res.send([err, true]);
