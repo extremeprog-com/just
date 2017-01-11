@@ -45,7 +45,7 @@ $ docker run -d -it --restart=always --name=just \
  -v /var/lib/just/mongodb:/var/lib/mongodb \
  -p 8080:80 extremeprog/just:latest
 ```
-
+Include a script to your application page:
 ```html
 <script src='http://domain.site.com/just.extremeprog.js?site=default'></script>
 ```
@@ -70,4 +70,4 @@ just.mgoInterface.save({_type: 'Fruit', name: 'Banana'})
 
 
 ## Further steps
-Read our API documentation.
+Read our [API documentation](https://extremeprog-com.github.io/just/auth).
