@@ -16,7 +16,6 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/github-light.css">
 
     <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
 
     <link rel="icon" href="static/favicon.png" type="image/x-icon">
 
@@ -29,17 +28,42 @@
 </head>
 <body>
 <div class="page-menu">
-    <div class="page-menu-item active"><a>Just</a></div>
-    <div class="page-menu-item"><a>Docs</a></div>
-    <div class="page-menu-item"><a>Support</a></div>
+    <div class="page-menu-item active"><a href="/just">Just</a></div>
+    <div class="page-menu-item"><a href="/just/auth">Docs</a></div>
+    <div class="page-menu-item"><a href="/just/support">Support</a></div>
 </div>
 
 <section class="page-header">
     <h1 class="project-name">Just<span class="project-name-point">.</span></h1>
 
     <h2 class="project-tagline">The most powerful and convenient tool for fast prototyping of web and mobile applications.</h2>
-    <a href="index.html" class="btn">Get Started</a>
+    <a href="/just/installation" class="btn">Get Started</a>
 </section>
+
+<section class="main-content">
+    <div class="markdown-body">
+        <h1>Quirkstart</h1>
+
+        <p>Install a Docker container on your server. By default there will be created a site with the name <code>default</code>.</p>
+        <pre><code>$ docker run -d -it --restart=always --name=just \
+        -v /var/lib/just/mongodb:/var/lib/mongodb \
+        -p 8080:80 extremeprog/just:latest</code></pre>
+
+        <p>Include script to your application page:</p>
+        <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">'</span>http://domain.site.com/just.extremeprog.js?site=default<span class="pl-pds">'</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+        <h1>Further Reading</h1>
+
+
+    </div>
+
+    <footer class="site-footer">
+        <span class="site-footer-owner">Friend Inc IT Lab <a
+            href="https://github.com/extremeprog-com">extremeprog-com</a>.</span>
+    </footer>
+
+</section>
+
 
 
 </body>

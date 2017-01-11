@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:url" content="/just/installation"/>
+    <meta property="og:site_name" content="Just"/>
+    <meta property="og:title" content="Installation"/>
+    <meta property="og:image" content="/docs/static/og_image.png"/>
+    <meta property="og:description" content=""/>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/github-light.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+
+    <link rel="icon" href="static/favicon.png" type="image/x-icon">
+
+    <base href="/docs/"/>
+
+    <title>Just Installation</title>
+    <meta name="description" content="">
+
+    <link rel="canonical" href="/docs/installation.html">
+</head>
+<body>
+<div class="page-menu">
+    <div class="page-menu-item"><a href="/just">Just</a></div>
+    <div class="page-menu-item active"><a href="/just/auth">Docs</a></div>
+    <div class="page-menu-item"><a href="/just/support">Support</a></div>
+</div>
+
+<section class="main-content">
+    <div class="main-content-menu">
+        <div class="main-content-menu-data">
+            <div class="menu-data-group">
+                <h3 class="menu-group-title">Installation</h3>
+            </div>
+            <div class="menu-data-group">
+                <h3 class="menu-group-title">Components</h3>
+
+                <ul class="menu-group-list">
+                    <li><a href="/just/auth">Auth</a></li>
+                    <li><a href="/just/mgointerface">Mongo Interface</a></li>
+                    <li><a href="/just/plugins">Plugins</a></li>
+                    <li><a href="/just/snapshots">Snapshots</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="main-content-wrapper">
+        <div class="markdown-body">
+            <h1>Installation</h1>
+
+            <p>Install a Docker container on your server. By default there will be created a site with the name <code>default</code>.</p>
+        <pre><code>$ docker run -d -it --restart=always --name=just \
+            -v /var/lib/just/mongodb:/var/lib/mongodb \
+            -p 8080:80 extremeprog/just:latest</code></pre>
+
+            <p>You can make put some custom parameters during <code>docker run</code> command.
+                It will let you define your own site name and admin data (login and password):</p>
+
+        <pre><code>$ docker run -d -it --restart=always --name=just \
+            -v /var/lib/just/mongodb:/var/lib/mongodb \
+            -e JUST_SITE_NAME=mycustomname
+            -e JUST_ADMIN_EMAIL=admin@mycustomname.com
+            -e JUST_ADMIN_PASSWORD=xxx
+            -p 8080:80 extremeprog/just:latest</code></pre>
+
+            <h1>Learn Some Terminology</h1>
+            <p><code>Site</code> - we use this term to denote the name of your service that will use Just.
+                Each site has it's own settings, users, etc. Technically the site is a record in the database in _sites collection.
+                There are several collections that correspond to the site: <code>site-{site-name}</code>,
+                <code>site-{site-name}-users</code>, <code>site-{site-name}-snapshots</code>.</p>
+        </div>
+    </div>
+
+
+    <footer class="site-footer">
+        <span class="site-footer-owner">Friend Inc IT Lab <a
+            href="https://github.com/extremeprog-com">extremeprog-com</a>.</span>
+    </footer>
+
+</section>
+
+
+</body>
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-89570200-2', 'auto');
+    ga('send', 'pageview');
+
+</script>
+</html>
