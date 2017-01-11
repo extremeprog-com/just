@@ -1,4 +1,4 @@
-var mgoAdmin = angular.module('mgoAdmin', ['ui.router','mongoSitesApi']);
+var mgoAdmin = angular.module('mgoAdmin', ['ui.router','just']);
 
 
 mgoAdmin.config(function ($stateProvider, $urlRouterProvider) {

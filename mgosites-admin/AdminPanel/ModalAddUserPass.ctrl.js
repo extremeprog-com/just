@@ -1,4 +1,4 @@
-mgoAdmin.controller('ModalAddUserPass', function($scope, $mongoSitesApi) {
+mgoAdmin.controller('ModalAddUserPass', function($scope, $just) {
 
     $scope.handleSavePassword = function() {
         var
@@ -7,7 +7,7 @@ mgoAdmin.controller('ModalAddUserPass', function($scope, $mongoSitesApi) {
 
         if(login.length && password.length) {
             $scope.state.loading = true;
-            $mongoSitesApi.auth_register({_id: login, password: password})
+            $just.auth_register({_id: login, password: password})
                 .then(function(result) {
                     $scope.state.loading = false;
                     $scope.handleCloseModal();

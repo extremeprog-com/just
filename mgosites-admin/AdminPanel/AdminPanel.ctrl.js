@@ -1,4 +1,4 @@
-mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
+mgoAdmin.controller('mgoAdminPanel', function ($scope, $just, $state) {
     $scope.state = {};
     $scope.state.command = "";
     $scope.state.activeDataType = "";
@@ -76,14 +76,14 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
     }
 
     $scope.loadDataTypes = function () {
-        $mongoSitesApi.mgoInterface.aggregate({"$group": {_id: "$_type", count: { $sum: 1 }}}).then(function (data) {
+        $just.mgoInterface.aggregate({"$group": {_id: "$_type", count: { $sum: 1 }}}).then(function (data) {
             $scope.state.dataTypes = data;
             $scope.$$phase || $scope.$apply();
         });
     };
 
     $scope.runRequest = function () {
-        $scope.state.command.replace('mongoSitesApi', '$mongoSitesApi');
+        $scope.state.command.replace('just', '$just');
         $scope.state.objects = null;
         $scope.objects = null;
         var promise;
@@ -102,7 +102,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
 
         switch (dT) {
             case "Users":
-                $scope.state.command = 'mongoSitesApi.auth_users()';
+                $scope.state.command = 'just.auth_users()';
                 break;
             default:
                 var request = [{_type: dT}, {limit: 100}];
@@ -110,7 +110,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
                     console.log(objectRestrictions[dT].readFilter);
                     angular.merge(request[0], objectRestrictions[dT].readFilter);
                 }
-                $scope.state.command = 'mongoSitesApi.mgoInterface.find(' + request.map(JSON.stringify).join(", ") + ')';
+                $scope.state.command = 'just.mgoInterface.find(' + request.map(JSON.stringify).join(", ") + ')';
                 break;
         }
         $scope.runRequest();
@@ -137,7 +137,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
 
     $scope.User = null;
 
-    $mongoSitesApi.auth_check().then(function(User) {
+    $just.auth_check().then(function(User) {
 
         $scope.User = User;
 
@@ -145,7 +145,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
         objectTemplates     = {};
         listTemplates       = {};
         allowedObjects      = null;
-        $mongoSitesApi.mgoInterface.find({_type: 'Plugin'}).then(function(data) {
+        $just.mgoInterface.find({_type: 'Plugin'}).then(function(data) {
             substitute(data, {user: User});
             $scope.pluginsReady = true;
             data.map(function(plugin) {
@@ -198,7 +198,7 @@ mgoAdmin.controller('mgoAdminPanel', function ($scope, $mongoSitesApi, $state) {
     });
 
     $scope.logout = function() {
-        $mongoSitesApi.auth_logout().then(function() {
+        $just.auth_logout().then(function() {
             $state.go("login");
         });
     }

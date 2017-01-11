@@ -1,4 +1,4 @@
-mgoAdmin.controller('mgoAdminLogin', function($scope, $mongoSitesApi, $state, $location) {
+mgoAdmin.controller('mgoAdminLogin', function($scope, $just, $state, $location) {
     $scope.state = {
           login: localStorage.email || ''
         , site: localStorage.sitename || ''
@@ -15,7 +15,7 @@ mgoAdmin.controller('mgoAdminLogin', function($scope, $mongoSitesApi, $state, $l
         }
 
         loadMSAScriptOnPage(function() {
-            mongoSitesApi.auth($scope.state.login, $scope.state.password).then(
+            $just.auth($scope.state.login, $scope.state.password).then(
                 function(data) {
                     if(data.token) $state.go('init');
                 },
@@ -38,11 +38,11 @@ mgoAdmin.controller('mgoAdminLogin', function($scope, $mongoSitesApi, $state, $l
     };
 
     function loadMSAScriptOnPage(cb) {
-        MSA_SITE = $scope.state.site;
+        JUST_SITE = $scope.state.site;
 
         var s = document.createElement("script");
         s.type = "text/javascript";
-        s.src = "/mongoSitesApi.js?site=" + localStorage.sitename;
+        s.src = "/just.extremeprog.js?site=" + localStorage.sitename;
         document.querySelector("head").appendChild(s);
 
         s.onload = function() {

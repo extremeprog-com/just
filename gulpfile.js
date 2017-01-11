@@ -1,7 +1,6 @@
 var gulp        = require('gulp');
 var concat      = require('gulp-concat');
 var ngAnnotate  = require('gulp-ng-annotate');
-var tap         = require('gulp-tap');
 var sourcemaps  = require('gulp-sourcemaps');
 
 var path_js = [
