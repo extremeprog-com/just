@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:url" content="/docs/install.html"/>
+    <meta property="og:site_name" content="Just"/>
+    <meta property="og:title" content="Installation"/>
+    <meta property="og:image" content="/docs/static/og_image.png"/>
+    <meta property="og:description" content=""/>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/github-light.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+
+    <link rel="icon" href="static/favicon.png" type="image/x-icon">
+
+    <base href="/docs/"/>
+
+    <title>Just Mongo Interface Component</title>
+    <meta name="description" content="">
+
+    <link rel="canonical" href="/docs/mgointerface.html">
+</head>
+<body>
+<div class="page-menu">
+    <div class="page-menu-item"><a href="/just">Just</a></div>
+    <div class="page-menu-item active"><a href="/just/auth">Docs</a></div>
+    <div class="page-menu-item"><a href="/just/support">Support</a></div>
+</div>
+
+<section class="main-content">
+    <div class="main-content-menu">
+        <div class="main-content-menu-data">
+            <div class="menu-data-group">
+                <h3 class="menu-group-title"><a href="/just/installation">Installation</a></h3>
+            </div>
+            <div class="menu-data-group">
+                <h3 class="menu-group-title"><a href="/just/auth">Components</a></h3>
+                <ul class="menu-group-list">
+                    <li><a href="/just/auth">Auth</a></li>
+                    <li class="active"><a href="/just/mgointerface">Mongo Interface</a></li>
+                    <li><a href="/just/plugins">Plugins</a></li>
+                    <li><a href="/just/snapshots">Snapshots</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="main-content-wrapper">
+        <div class="markdown-body">
+            <h1>Mongo Interface Component</h1>
+                <p>Just stores all objects in one collection <code>site-{site-name}</code>. Separate these objects by field <code>_type</code>.
+                    Mongo Interface is a collection of endpoints that allows you to work with mongo right from the client side.</p>
+
+                <h2>General Requests</h2>
+
+                <p><strong>just.mgoInterface.find(query, projection)</strong></p>
+
+                <hr>
+
+                <p>Finds and returns documents in the collection. <code>query</code> specifies the selection filter, <code>projection</code> specifies the fields of selected data to return. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre><span class="pl-smi">just</span>.<span class="pl-smi">mgoInterface</span>
+    .<span class="pl-c1">find</span>({ <span class="pl-s"><span class="pl-pds">"</span>_type<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Car<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>country<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Belgium<span class="pl-pds">"</span></span> }, { <span class="pl-s"><span class="pl-pds">"</span>limit<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">5</span> })
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.mgoInterface.findOne(query, projection)</strong></p>
+
+                <hr>
+
+                <p>Finds and returns the first document in the collection according to <code>query</code>, that specifies the selection filter. <code>projection</code> specifies the fields of selected data to return. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre><span class="pl-smi">just</span>.<span class="pl-smi">mgoInterface</span>
+    .<span class="pl-en">findOne</span>({ <span class="pl-s"><span class="pl-pds">"</span>_type<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Car<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>country<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-s"><span class="pl-pds">"</span>$in<span class="pl-pds">"</span></span><span class="pl-k">:</span> [<span class="pl-s"><span class="pl-pds">"</span>France<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Germany<span class="pl-pds">"</span></span>] }}, { <span class="pl-s"><span class="pl-pds">"</span>model<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">0</span> })
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.mgoInterface.aggregate([stage1, stage2, stage3, ...])</strong></p>
+
+                <hr>
+
+                <p>Performs Mongo stage-based aggregation operations. Method accepts an array of stages for aggregation. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre><span class="pl-smi">just</span>.<span class="pl-smi">mgoInterface</span>
+    .<span class="pl-en">aggregate</span>([
+        { <span class="pl-s"><span class="pl-pds">"</span>$match<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-s"><span class="pl-pds">"</span>_type<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Car<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>country<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Germany<span class="pl-pds">"</span></span> } },
+        { <span class="pl-s"><span class="pl-pds">"</span>$group<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-s"><span class="pl-pds">"</span>year<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>2014<span class="pl-pds">"</span></span> } },
+        { <span class="pl-s"><span class="pl-pds">"</span>$project<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-s"><span class="pl-pds">"</span>_id<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>$model<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>year<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>$year<span class="pl-pds">"</span></span> } }
+        { <span class="pl-s"><span class="pl-pds">"</span>$limit<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">15</span> }
+    ])
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.mgoInterface.insert([{}])</strong></p>
+
+                <hr>
+
+                <p>Inserts the document or a set of document into a collection. Accepts one document or an array of documents. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre><span class="pl-smi">just</span>.<span class="pl-smi">mgoInterface</span>
+    .<span class="pl-en">insert</span>([{ <span class="pl-s"><span class="pl-pds">"</span>_type<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Car<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>country<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>France<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>manufacturer<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Bugatti<span class="pl-pds">"</span></span> }])
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.mgoInterface.update(query, update, params)</strong></p>
+
+                <hr>
+
+                <p>Updates a document or a set of documents in the collection defined by <code>query</code> param. <code>update</code> param defines the modifications to apply. <code>params</code> is an optional object with additional parameters for update (upsert, multi, writeConcern). Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre><span class="pl-smi">just</span>.<span class="pl-smi">mgoInterface</span>
+    .<span class="pl-en">update</span>(
+        { <span class="pl-s"><span class="pl-pds">"</span>_type<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Car<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>country<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>France<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>manufacturer<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Bugatti<span class="pl-pds">"</span></span> },
+        { <span class="pl-s"><span class="pl-pds">"</span>$addToSet<span class="pl-pds">"</span></span><span class="pl-k">:</span> { flags<span class="pl-k">:</span> { last_version<span class="pl-k">:</span> <span class="pl-c1">true</span> } } },
+        { <span class="pl-s"><span class="pl-pds">"</span>multi<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">true</span> }
+    )
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.mgoInterface.mapReduce(map, reduce, params)</strong></p>
+
+                <hr>
+
+                <p>Performs map-reduce aggregation operations over a collection. Accepts <code>map</code> and <code>reduce</code>
+                    functions and an object with additional params. For more details about map-reduce check mongo official documentation
+                    <a href="https://docs.mongodb.com/manual/reference/method/db.collection.mapReduce/">https://docs.mongodb.com/manual/reference/method/db.collection.mapReduce/</a>.
+                    Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre><span class="pl-smi">just</span>.<span class="pl-smi">mgoInterface</span>
+    .<span class="pl-en">mapReduce</span>(
+        <span class="pl-k">function</span>() { <span class="pl-k">if</span>(<span class="pl-c1">this</span>.<span class="pl-smi">consumption</span> <span class="pl-k">&gt;</span> <span class="pl-c1">10000</span>) <span class="pl-en">emit</span>(<span class="pl-c1">this</span>.<span class="pl-smi">_id</span>, <span class="pl-c1">this</span>.<span class="pl-smi">consumption</span>); },
+        <span class="pl-k">function</span>(<span class="pl-smi">k</span>, <span class="pl-smi">v</span>) { <span class="pl-k">return</span> <span class="pl-c1">Array</span>.<span class="pl-en">sum</span>(v); },
+        { out<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>consumption_calculations<span class="pl-pds">"</span></span> }
+    )
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.mgoInterface.remove(query, params)</strong></p>
+
+                <hr>
+
+                <p>Remove a document or a set of documents defined by <strong>query</strong> in the collection. <strong>params</strong> is an object with the fields: (justOne, writeConcern). Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre><span class="pl-smi">just</span>.<span class="pl-smi">mgoInterface</span>
+    .<span class="pl-c1">remove</span>({ <span class="pl-s"><span class="pl-pds">"</span>_id<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>98234jfsdf7864hf9sdss<span class="pl-pds">"</span></span>})
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <h2>Misc Requests</h2>
+
+                <p><strong>just.graph_add(source_id, destination_id, role)</strong></p>
+
+                <hr>
+
+                <p>Adds an object that links two different objects and creates the snapshot of it. This object has a type "link" by default.
+                    <code>source</code> parameter is an id of an object itself, <code>destination_id</code> is an id of a subject.
+                    <code>role</code> is a string parameter that defines the role of the relationship between object and subject. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">graph_add</span>(<span class="pl-s"><span class="pl-pds">"</span>c3e4a8c585ce4e1eec00fe53ebb79490<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>099f343526d0b3a426ffec55cdca64d3<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Consumtion_has_Building<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.graph_search(query, projection, options)</strong></p>
+
+                <hr>
+
+                <p>This function is useful if you want to find a destination object by source object or vice versa.
+                    <code>query</code> param is an object which is used to select particular link object and source object to find destination one.
+                    <code>projection</code> and <code>options</code> params are similar to which are used in <code>find</code> method. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">graph_search</span>({ role<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Consumtion_has_Building<span class="pl-pds">"</span></span>, source<span class="pl-k">:</span> { <span class="pl-s"><span class="pl-pds">"</span>value<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-s"><span class="pl-pds">"</span>$gte<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">145345982</span> } } })
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.graph_remove(id || object)</strong></p>
+
+                <hr>
+
+                <p>Removes the link object between two objects. Accepts an object itself or its id. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">graph_remove</span>(<span class="pl-s"><span class="pl-pds">"</span>c3e4a8c585ce4e1eec00fe53ebb79490<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.graph_update(link_object)</strong></p>
+
+                <hr>
+
+                <p>Updates link object and creates the snapshot of it. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">graph_update</span>({<span class="pl-s"><span class="pl-pds">"</span>_type<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>link<span class="pl-pds">"</span></span>, _id<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>c3e4a8c585ce4e1eec00fe53ebb79490<span class="pl-pds">"</span></span>})
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+                <p><strong>just.listObjectTypes()</strong></p>
+
+                <hr>
+
+                <p>Gets all available objects types in the collection. Returns Promise object.</p>
+
+                <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">listObjectTypes</span>()
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+    </div>
+    </div>
+
+
+    <footer class="site-footer">
+        <span class="site-footer-owner">Friend Inc IT Lab <a
+            href="https://github.com/extremeprog-com">extremeprog-com</a>.</span>
+    </footer>
+
+</section>
+
+
+</body>
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-89570200-2', 'auto');
+    ga('send', 'pageview');
+
+</script>
+</html>

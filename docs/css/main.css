@@ -329,7 +329,7 @@ a:hover {
     padding: 12px 24px;
 }
 
-.menu-group-title { color: white!important; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; padding-bottom: 0; margin-bottom: 0.5rem !important; }
-.menu-group-list { list-style-type: none; margin: 0; padding: 0; font-size: 14px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-.menu-group-list a { list-style-type: none; color: white; text-decoration: none; border: none; }
-.menu-group-list a:active { color: #020100 }
+.menu-group-title { margin-top: 0!important; color: white!important; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; padding-bottom: 0; margin-bottom: 0.5rem !important; }
+.menu-group-list { list-style-type: none; margin: 0; padding: 0; font-size: 16px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.menu-data-group a { list-style-type: none; color: white; text-decoration: none; border: none; }
+.menu-data-group a:active { color: #020100 }
