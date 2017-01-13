@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:url" content="/docs/install.html"/>
+    <meta property="og:site_name" content="Just"/>
+    <meta property="og:title" content="Installation"/>
+    <meta property="og:image" content="/docs/static/og_image.png"/>
+    <meta property="og:description" content=""/>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/github-light.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+
+    <link rel="icon" href="static/favicon.png" type="image/x-icon">
+
+    <base href="/docs/"/>
+
+    <title>Just Auth Component</title>
+    <meta name="description" content="">
+
+    <link rel="canonical" href="/docs/auth.html">
+</head>
+<body>
+<div class="page-menu">
+    <div class="page-menu-item"><a href="/just">Just</a></div>
+    <div class="page-menu-item active"><a href="/just/auth">Docs</a></div>
+    <div class="page-menu-item"><a href="/just/support">Support</a></div>
+</div>
+
+<section class="main-content">
+    <div class="main-content-menu">
+        <div class="main-content-menu-data">
+            <div class="menu-data-group">
+                <h3 class="menu-group-title"><a href="/just/installation">Installation</a></h3>
+            </div>
+            <div class="menu-data-group">
+                <h3 class="menu-group-title"><a href="/just/auth">Components</a></h3>
+                <ul class="menu-group-list">
+                    <li><a href="/just/auth">Auth</a></li>
+                    <li><a href="/just/mgointerface">Mongo Interface</a></li>
+                    <li><a href="/just/plugins">Plugins</a></li>
+                    <li class="active"><a href="/just/snapshots">Snapshots</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="main-content-wrapper">
+
+        <div class="markdown-body">
+            <h1>Snapshots</h1>
+            <p>Mongo Interface provides only general native mongo functionality.
+                We decided to amplify some functions and add an extra opportunities for data manipulation.</p>
+
+            <p>Snapshots are objects that are stored in the <code>site-{site.id}-snapshots</code> collection.
+                They are created once you save the object in the database using <code>save</code> function.</p>
+
+            <p><strong>just.save([object])</strong></p>
+
+            <hr>
+
+            <p>Inserts a new document or updates the existing one in the collection and creates the snapshot of this document. Returns Promise object.</p>
+
+            <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">save</span>([{<span class="pl-s"><span class="pl-pds">"</span>_type<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Country<span class="pl-pds">"</span></span>, name<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Australia<span class="pl-pds">"</span></span>, language<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>English<span class="pl-pds">"</span></span>}])
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+            <p><strong>[NOTE]:</strong> If you don't want some fields to be saved in the snapshot you can put them into <code>_persist</code> key. It won't be added to snapshot mask.</p>
+
+            <p><strong>just.snapshots(query, projection)</strong></p>
+
+            <hr>
+
+            <p>Selects the snapshots defined by <code>query</code> in the collection.
+                <code>projection</code> param is similar to one in find method. Returns Promise object.</p>
+
+            <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">snapshots</span>([{}])
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+            <p><strong>just.snapshots_one(query, projection)</strong></p>
+
+            <hr>
+
+            <p>Selects one snapshot defined by <code>query</code> in the collection.
+                <code>projection</code> param is similar to one in find method. Returns Promise object.</p>
+
+            <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">snapshots_one</span>([{}])
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+            <p><strong>just.snapshots_revert(snapshot_id)</strong></p>
+
+            <hr>
+
+            <p>Reverts a snapshot of the object to the previous one. Accepts <code>snapshot_id</code> - an id of the target snapshot. Returns Promise object.</p>
+
+            <div class="highlight highlight-source-js"><pre>just
+    .<span class="pl-en">snapshots_revert</span>(<span class="pl-s"><span class="pl-pds">"</span>c3e4a8c585ce4e1eec00fe53ebb79490<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">res</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> your code here</span>
+    })</pre></div>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <span class="site-footer-owner">Friend Inc IT Lab <a
+            href="https://github.com/extremeprog-com">extremeprog-com</a>.</span>
+    </footer>
+
+</section>
+
+
+</body>
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-89570200-2', 'auto');
+    ga('send', 'pageview');
+
+</script>
+</html>

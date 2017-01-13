@@ -15,8 +15,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css">
     <link rel="stylesheet" type="text/css" media="screen" href="css/github-light.css">
 
-    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/   css?family=Work+Sans" rel="stylesheet">
 
     <link rel="icon" href="static/favicon.png" type="image/x-icon">
 
@@ -30,26 +29,42 @@
 <body>
 <div class="page-menu">
     <div class="page-menu-item"><a href="/just">Just</a></div>
-    <div class="page-menu-item"><a href="/just/auth">Docs</a></div>
-    <div class="page-menu-item active"><a href="/just/support">Support</a></div>
+    <div class="page-menu-item active"><a href="/just/auth">Docs</a></div>
+    <div class="page-menu-item"><a href="/just/support">Support</a></div>
     <div class="page-menu-item"><a href="/just/contribution">Contribution</a></div>
 </div>
 
 <section class="main-content">
-        <div class="markdown-body">
-            <h1>More Help Here</h1>
-
-            <h3>IRC</h3>
-            <p>Developers and users idle on Freenode.net's IRC network in #just on freenode</p>
-
-            <h3>Bugs?</h3>
-            <p>If you've found any bug or you did not get any help through other channels please file your
-                issue <a href="https://github.com/extremeprog-com/just/issues">here</a></p>
-
-            <h3>Need to contact us?</h3>
-            <p>Feel free to write us by email at <a href="mailto:just@extremeprog.com">just@extremeprog.com</a>.</p>
-
+    <div class="main-content-menu">
+        <div class="main-content-menu-data">
+            <div class="menu-data-group">
+                <h3 class="menu-group-title"><a href="/just/installation">Installation</a></h3>
+            </div>
+            <div class="menu-data-group">
+                <h3 class="menu-group-title"><a href="/just/auth">Components</a></h3>
+                <ul class="menu-group-list">
+                    <li><a href="/just/auth">Auth</a></li>
+                    <li><a href="/just/mgointerface">Mongo Interface</a></li>
+                    <li><a href="/just/plugins">Plugins</a></li>
+                    <li><a href="/just/snapshots">Snapshots</a></li>
+                </ul>
+            </div>
+            <div class="menu-data-group">
+                <h3 class="menu-group-title"><a href="/just/faq">FAQ</a></h3>
+            </div>
         </div>
+    </div>
+    <div class="main-content-wrapper">
+        <h1>FAQ</h1>
+
+        <h2>How to migrate from one server to another?</h2>
+        <p>For example you have to move your current admin container to another server. Besides of pulling and installer
+            docker image from Dockerhub you need to migrate mongodb data (in case you want to save it). By default mongo
+            stores it's data in <code>/var/lib/just/mongodb</code> folder on your server. So you just
+            need to stop an admin container on the new server, move mentioned folder to the new server and start the
+            container.</p>
+    </div>
+
 
     <footer class="site-footer">
         <span class="site-footer-owner">Friend Inc IT Lab <a
