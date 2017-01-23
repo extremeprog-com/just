@@ -6,10 +6,10 @@ if [ ! "$MONGO_URL" ]; then
     mongod --dbpath=/var/lib/mongodb --smallfiles &
     while true; do
         if mongo --eval "db.stats()" > /dev/null; then
+            break
+        else
             echo "waiting for mongodb..."
             sleep 2
-        else
-            break
         fi
     done
 fi
