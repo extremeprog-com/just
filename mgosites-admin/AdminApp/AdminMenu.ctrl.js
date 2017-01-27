@@ -2,7 +2,7 @@ mgoAdmin.controller('mgoAdminMenu', function($scope, $just, $state) {
 
     $scope.User = null;
     // check if the user is logged in or not
-    Just.auth_check().then(
+    just.auth_check().then(
         function (data) {
 
             $scope.User = data;
