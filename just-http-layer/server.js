@@ -183,7 +183,7 @@ function parser(data_handle, custom_handle) {
             var origin = url.parse(req.headers.referer || 'http://localhost').host.replace(/^\d+\./,'');
             var isLocalhost = origin.match(/^(localhost|127.\d+.\d+.\d+)(:\d+)?$/);
 
-            sitesCollection.find(isLocalhost ? {_id: req.headers['x-mongoapi-site']} : {names: origin}).toArray(function (err, sites) {
+            sitesCollection.find(isLocalhost ? {_id: req.headers['x-mongoapi-site'] || req.query.site} : {names: origin}).toArray(function (err, sites) {
                 if (!sites.length) {
                     res.status(404);
                     res.send('');
@@ -197,9 +197,9 @@ function parser(data_handle, custom_handle) {
                     try {
                         var site = sites[0];
 
-                        var auth_data, user;
+                        var user;
 
-                        var token = req.query.token || req.cookies[site._id + ':_auth'];
+                        var token = req.query.api_key || req.query.token || req.cookies[site._id + ':_auth'];
 
                         if(!token) {
                             if (data_handle) {
@@ -212,11 +212,11 @@ function parser(data_handle, custom_handle) {
 
                         try {
 
-                            auth_data = JSON.parse(utils.decrypt(site.crypto_key, token));
-
                             db.collection('site-' + site._id + '-users').find({
-                                _id: auth_data.user,
-                                active_sessions: token
+                                $or: [
+                                    {active_sessions: token},
+                                    {api_key: token}
+                                ]
                             }).toArray(function (err, users) {
 
 
@@ -225,9 +225,7 @@ function parser(data_handle, custom_handle) {
                                     console.error(err, new Error().stack);
                                     return
                                 }
-                                if (!users.length) {
-                                    auth_data = null
-                                } else {
+                                if (users.length) {
                                     user = users[0]
                                 }
 
