@@ -22,6 +22,10 @@ random_title = function() {
     return Math.random().toString(32).substr(2);
 };
 
+random_word = function() {
+    return Math.random().toString(32).substr(2);
+};
+
 merge_data = function(destination, source, fields) {
     if(!fields) {
         fields = Object.keys(source);

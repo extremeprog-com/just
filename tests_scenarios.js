@@ -59,6 +59,9 @@ module.exports = {
                 "user should be able to retrieve other users": [
                     "func just-http-layer/_tests/auth.functional.get_users: login with an admin user, get users, " +
                     "get particular user"
+                ],
+                "user should be able to auth by token": [
+                    "func just-http-layer/_tests/auth.functional.auth_by_token: should return OK on find request with token"
                 ]
             },
             "Attribute: Secure": {
@@ -141,5 +144,13 @@ module.exports = {
         "Can set admin account email from env variables": [
             "func deploy/admin: set usual user as admin, check that provided user is admin"
         ]
+    },
+    "Just clients layer": {
+        "Nodejs lib": {
+            "user can make requests with lib": [
+                "func just-clients-layer/nodejs/_tests/nodejs-lib.functional.general_requests: return OK on authorized request with api_key,"
+                    + "return OK on saving object to db"
+            ]
+        }
     }
 };
