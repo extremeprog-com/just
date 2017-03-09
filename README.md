@@ -65,7 +65,7 @@ just.mgoInterface.find({_type: 'Fruit'})
 
 #### Write data
 ```
-just.mgoInterface.save({_type: 'Fruit', name: 'Banana'})
+just.save({_type: 'Fruit', name: 'Banana'})
 ```
 
 
