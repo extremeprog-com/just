@@ -47,28 +47,29 @@ mongoClient.connect(mongoHost, function (err, db) {
                     db
                         .collection('site-' + site_name + '-users')
                         .find({_id: email}).toArray(function (err, user) {
-                            if (!user.length) {
-                                var new_user = {_id: email};
+                        if (!user.length) {
+                            var new_user = {_id: email};
 
-                                var hash = new crypto.Hash('MD5');
-                                hash.update(new_user._id + password + site[0].hash_key);
+                            var hash = new crypto.Hash('MD5');
+                            hash.update(new_user._id + password + site[0].hash_key);
 
-                                new_user._originated = parseInt(new Date() / 1000);
-                                new_user.passwordHash = hash.digest('base64');
-                                new_user.admin = true;
-                                new_user.active = 1;
+                            new_user._originated = parseInt(new Date() / 1000);
+                            new_user.passwordHash = hash.digest('base64');
+                            new_user._admin = true;
+                            new_user.admin = true;
+                            new_user.active = 1;
 
-                                db.collection('site-' + site_name + '-users').insert(new_user, function (err, data) {
-                                    if (err) {
-                                        console.log(err);
-                                    }
-                                    console.log('New admin user ' + email +  ' was added to site ' + site_name + ".");
-                                })
-                            } else {
-                                console.log("User with " + email + ' already exists.')
-                            }
-                            db.close();
-                        });
+                            db.collection('site-' + site_name + '-users').insert(new_user, function (err, data) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                console.log('New admin user ' + email +  ' was added to site ' + site_name + ".");
+                            })
+                        } else {
+                            console.log("User with " + email + ' already exists.')
+                        }
+                        db.close();
+                    });
             }
         );
     }

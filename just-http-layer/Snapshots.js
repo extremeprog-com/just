@@ -35,7 +35,10 @@ classes.Snapshots = {
 
                 if (_id) {
                     collection.findOne({_id: _id}, function (err, result) {
-
+                        if (result === null) {
+                            insertOne(data, collection, snapshots, cb, _id, user);
+                            return;
+                        }
                         var i, changed = false, changed_persist = false;
 
                         // if has found element with the _id in the collection
@@ -99,28 +102,31 @@ classes.Snapshots = {
                         });
                     });
                 } else {
-
-                    data._originated = data._modified = parseInt(new Date() / 1000);
-
-                    collection.insertOne(data, function (err1, result) {
-                        _id = data._id;
-                        delete data._id;
-
-                        data._oid = _id;
-                        data._user = user._id;
-                        delete data._id;
-
-                        delete data._persist;
-
-                        snapshots.insertOne(data, function (err2, result) {
-                            collection.findOne({_id: _id}, function (err3, result) {
-                                cb(err1 || err2 || err3, result);
-                            })
-                        })
-                    });
+                    insertOne(data, collection, snapshots, cb, _id, user);
                 }
 
             }));
+
+            function insertOne(data, collection, snapshots, cb, _id, user) {
+                data._originated = data._modified = parseInt(new Date() / 1000);
+
+                collection.insertOne(data, function (err1, result) {
+                    _id = data._id;
+                    delete data._id;
+
+                    data._oid = _id;
+                    data._user = user._id;
+                    delete data._id;
+
+                    delete data._persist;
+
+                    snapshots.insertOne(data, function (err2, result) {
+                        collection.findOne({_id: _id}, function (err3, result) {
+                            cb(err1 || err2 || err3, result);
+                        })
+                    })
+                });
+            }
 
             app.post('/api/snapshots', app.parser(function (site, data, cb, user) {
 
