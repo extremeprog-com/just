@@ -64,20 +64,13 @@ var just = (function() {
                         }
                     }))
                 }, function(err, res, body) {
-
-                    if (res.statusCode == 200) {
-                        var response = typeof body == 'object' ? body : JSON.parse(body);
-                        if (!response[0]) {
-                            sortObjectKeys(response[1]);
-                            resolve(response[1]);
-                        } else {
-                            reject(response[0]);
-                            //throw new Error('just error during ' + method + '(): ' + JSON.stringify(response[0]));
-                        }
+                    var response = typeof body == 'object' ? body : JSON.parse(body);
+                    if (!response[0]) {
+                        sortObjectKeys(response[1]);
+                        res.statusCode == 200 ? resolve(response[1]) : reject(response[1]);
                     } else {
-                        reject()
+                        reject(response[0]);
                     }
-
                 });
 
                 //if (location.host.match(/^(localhost|127.\d+.\d+.\d+)(:\d+)?$/) ||
